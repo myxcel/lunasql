@@ -1,0 +1,13 @@
+  SEEK (/) : Évalue une expression SQL et retourne le résultat
+  SEEK expr  évalue une expression SQL expr
+  Avec commande SELECT ou CALL, si la commande SQL retourne plusieurs
+  colonnes, le résultat est un dictionnaire, si elle a plusieurs
+  lignes, c'est une liste (de valeurs ou de dictionnaires).
+
+  Ex. : SEEK {select count(*) from test} --> 20
+        SEEK insert into test values (12,'toto') --> 0
+        SEEK drop table test --> 0
+        print $[SEEK select * from test] --> (dictionnaire)
+        def data $[SEEK select id, libelle from test where id<4]
+
+  Attribue la valeur de la variable fixée à la constante _RET_VALUE.

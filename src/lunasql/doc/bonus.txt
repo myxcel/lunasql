@@ -1,0 +1,172 @@
+  *** Quelques informations bonus et exemples de codes ***
+
+Cette rubrique liste quelques échantillons de code LunaSQL pour en
+apprécier la syntaxe élégante :) en dehors de tout code SQL !
+Toute ressemblance avec du code existant ou ayant existé est purement
+fortuite.
+
+Vous trouverez également sur ce dépot d'autres échantillons de code :
+https://github.com/CodeEspritLibre/lunasql-samples
+
+
+/*-------------------------------- Petit jeu ----------------------*/
+
+/*
+ * Jeu consistant à deviner un nombre entre 0 et 10 utilisant la
+ * récursivité ! C'est un exemple pédagogique, dans la vraie vie
+ * préférer bien sûr utiliser une boucle.
+ */
+opt :ALLOW_RECUR 1
+def jeu-devine {
+  print "Devinez un nombre entre 0 et 9"
+  def nbalea,nbcoups $[rand -m=nbr -s=9] 0
+  devine
+}
+def devine {
+  def nbcoups,nbsaisi $(nbcoups#inc!) $[input "Nombre ? "]
+  if ['$(nbsaisi)'=='$(nbalea)'] {
+    print "Bravo, réussi en $(nbcoups) coups !"
+    undef nbalea nbsaisi nbcoups
+  } else {
+    if ['$(nbsaisi)'>'$(nbalea)'] {
+      print "Non, plus petit."
+    } else {
+      print "Non, plus grand."
+    }
+    devine
+  }
+}
+-- lancement du jeu
+jeu-devine
+
+
+/*---------------------- Itérateurs, séquences et listes ----------*/
+
+/*
+ * Exemple de boucle while affichant les arguments saisis
+ */
+def repeat {
+  let i=0;while"i++<$(arg_nb)" { print"$(arg$[I(i)])" }
+}
+repeat 1 4 7
+
+/*
+ * Création d'une séquence simple de nombres pour itérateur :
+ * de m à n, pas p
+ * Usage : seq [fin=10] [deb=0] [inc=1]
+ * @need 4.4
+ */
+def seq {
+  arg [fin:int 10] [deb:int 0] [pas:int 1]
+  def -l r ""
+  for i -r $deb:$fin:$pas {def -u1 r "$r$i "}
+  return $r
+}
+print $[seq 5]
+
+/*
+ * Création d'une séquence élaborée de nombres pour itérateur :
+ * de m à n, pas p
+ * Usage : range nombre [deb=0] [inc=1]
+ * L'incrément est une variable JS
+ * Exemple pédagogique, préférer la commande : list range
+ */
+def range {
+  if !$arg_nb {
+    error "Usage : range nbre [deb=0] [inc=1]"
+  }
+  def -l nbre,deb,inc $arg1 $(*arg2?0) $(*arg3?1)
+  let [i = $deb; n = 0;]
+  def r ""
+  while [n++<$nbre] {
+    def r "$r $[I(i)]"
+    let [i = i + $inc;]
+  }
+  def -l r0 $r  -- pour undef la var. r avant retour
+  undef r
+  return $[str ltrim $r0]
+}
+-- utilisation
+print $[range 5]
+for i $[range 5 10 2] {print $i}
+
+/*
+ * Affichage d'une séquence de nombre en couleurs
+ */
+def print-colored-seq {
+  def -l nmax $(*arg1?20)
+  let idx=0
+  while [(idx=idx+1)<=$nmax] {
+    if [idx%2==0] { -- pairs en vert
+      print -n -c2 "$[I(idx)] "  -- I() force le type int
+    } else { -- impairs en rouge
+      print -n -c3 "$[I(idx)] "
+    }
+  }
+  print
+}
+-- tirage d'une séquence
+print-colored-seq
+print-colored-seq 10
+
+
+/*-------------------- Programmation fonctionnelle ----------------*/
+
+/*
+ * Fonction de haut niveau
+ */
+-- Ajoute 5
+defm add5 {n:int} {let $n+5}
+-- Multiplie par 3
+defm mult3 {n:int} {let $n*3}
+
+-- Fonction d'appel
+defm calc {func n:int} {
+  print "calc $n : $[$func $n]"
+}
+
+calc add5 8
+calc mult3 12
+
+/*
+ * Décorateurs
+ */
+-- Décorateur : encadre par deux chaînes
+defm decor {func} {
+  -- fonction "décorée" retournée
+  put "
+  print ^"------------^"
+  $func
+  print ^"------------^"
+  "
+  -- ou $($func) pour intégrer le corps
+}
+
+-- Fonction à décorer
+def print_text {
+  print "Hello world!"
+}
+
+-- Appel
+def print_text_dec $[decor print_text]
+print_text_dec
+
+
+/*-------------------------------- Réseaux ------------------------*/
+
+/*
+ * Affichage de l'adresse MAC de la première interface réseau avec
+ * séparateur tirets. Exemple pédagogique uniquement.
+ */
+def get-mac {
+  def -l mac,sep "" ""
+  for by $[str split $[list get $[list get $[info network] 0] 1] ""] {
+    if $(sep=) {def -u2 sep -} else {def -u2 sep ""}
+    def -u1 -a mac $(sep)$(by)
+  }
+  return $[str substr $mac 1:]
+}
+
+/*
+ * Bon travail avec LunaSQL !
+ */

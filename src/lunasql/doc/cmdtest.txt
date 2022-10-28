@@ -1,0 +1,59 @@
+  TEST : Commande de test de nullité ou falsitude des arguments
+  Chaque argument est testé, et s'il est vide, égal à 0 (nul) ou
+  'false', une erreur est levée.
+  TEST <chaîne>          : test la nullité de la chaîne
+  TEST -n <numéro>       : affecte un numéro au test
+  TEST -d <description>  : affecte une description au test
+       Exemple :  TEST -n=23 -d="va planter" 1 2 ""  -- échoue !
+
+  Exemple complet d'utilisation sur une batterie de tests :
+  (Note : exemple pédagogique. Préférer l'utilisation de la macro
+   "run-tests" de la même bibliothèque)
+
+----------------------- code -----------------------------------
+
+    -- on veut tester la substitution de sous-chaîne par $(s&...)
+    def -l testx {
+      arg s v
+      let notest++
+      print -n " - test $[notest]   "
+      test -n=$[notest] -d="attendu : $v, obtenu : $s" $['$s'=='$v']
+      print -c2 ok
+    }
+
+    let notest=0
+    def -l s abcdefgh
+    --       01234567 l=8
+
+    /* 01 */ testx $(s&:)     abcdefgh
+    /* 02 */ testx $(s&0:)    abcdefgh
+    /* 03 */ testx $(s&1:)    bcdefgh
+    /* 04 */ testx $(s&2:)    cdefgh
+    /* 05 */ testx $(s&3:)    defgh
+    /* 06 */ testx $(s&:4)    abcd
+    /* 07 */ testx $(s&:6)    abcdef
+    /* 08 */ testx $(s&:8)    abcdefgh
+    /* 09 */ testx $(s&:10)   abcdefgh
+    /* 10 */ testx $(s&1:7)   bcdefg
+    /* 11 */ testx $(s&1:6)   bcdef
+    /* 12 */ testx $(s&1:5)   bcde
+    /* 13 */ testx $(s&2:-1)  cdefg
+    /* 14 */ testx $(s&2:-2)  cdef
+    /* 15 */ testx $(s&2:-10) cba
+    /* 16 */ testx $(s&0:10)  abcdefgh
+    /* 17 */ testx $(s&-2:)   gh
+    /* 18 */ testx $(s&-4:)   efgh
+    /* 19 */ testx $(s&-2:-6) gfed
+    /* 20 */ testx $(s&-2:2)  gfed
+    /* 21 */ testx $(s&-1:0)  hgfedcb
+    /* 22 */ testx $(s&2:10)  cdefgh
+    /* 23 */ testx $(s&6:2)   gfed
+    /* 24 */ testx $(s&7:0)   hgfedcb
+    /* 25 */ testx $(s&10:0)  hgfedcb
+    /* 26 */ testx $(s&0,2,7) ach
+
+    print -c2 "$<n>Tous les tests OK"
+
+----------------------------------------------------------------
+
+  Attribue 1 à _RET_VALUE en cas de succès, lève une erreur sinon.

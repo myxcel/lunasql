@@ -1,0 +1,44 @@
+  EXPORT (EX) : Crée un fichier d'import de la table/req. en paramètre
+  EXPORT fichier table|requête
+  EXPORT fichier.ext table1
+  EXPORT fichier.ext ^
+       select col1,col2 from nom_table1 where col1>0 orber by machin
+  EXPORT nom_fichier.ext
+   Sans table/requête renseignée, le nom de fichier est choisi.
+   Les fichiers zippés (*.sql.gz) ou chiffrés (*.sql.cry) sont
+   supportés. Si extension cry (mode chiffrement), la clef est fournie
+   par l'option -k et peut faire 128 ou 256 bits (seuls les 128 ou 256
+   premiers bits (forts) sont retenus pour la clef). Le message chiffré
+   est d'abord compressé par GZip puis chiffré par l'algo AES 128/256
+   (selon la clef fournie) en mode CBC/PKCS5Padding.
+
+   Formats acceptés : SQL, CSV, TXT, HTML, XML (selon extension).
+   En cas d'export d'une requête en fichier SQL, la table doit être un
+   nom unique coincé obligatoirement sans alias entre FROM et WHERE.
+
+  EXPORT -c table|requête  : exporte en format TXT dans le presse-papier
+  EXPORT -f s -e e : recherche les tables dont le nom correspond à exp.
+       régulière s et les exporte chacune en fichier correspondant
+       avec l'extension e (par défaut: csv).
+       L'expression s peut être encadrée par ``.
+  EXPORT -n : les valeurs NULL sont représentées par la chaîne "<NULL>"
+       pour pouvoir être importées en valeurs nulles par IMPORT
+  EXPORT -o opts : exporte selon les options de format CSV spécifiées
+       opts : quote_char,sep_char,escape_char
+       Les 3 options doivent obligatoirement être spécifiées
+       Options par défaut : ",\
+
+  Exemples : EXPORT test.txt test       -- export de la table test
+             EXPORT path/to/test.txt    -- nom de fichier seul
+             EXPORT -f `.*_TB` -e csv.gz
+             EXPORT -f `.*_TB` -o ^",\  -- options par défaut
+             EXPORT -c select id,lib from test where id<10
+             EXPORT test.csv.cry TB_TEST -k=$[hash clefsecrete]
+  Notes :
+    - en cas d'exportation en SQL, le nom de la table retenu est ce qui
+      se trouve en FROM et WHERE. Il faut un WHERE (fût-ce true ou 1=1).
+    - selon les SGBD, il est possible d'exporter facilement du CSV.
+      Ex. H2 : CALL CSVWRITE('fichier.csv', 'SELECT * FROM TEST');
+
+  Attribue le nombre de lignes du dernier export à _RET_NLINES
+  et le nombre total à _RET_VALUE

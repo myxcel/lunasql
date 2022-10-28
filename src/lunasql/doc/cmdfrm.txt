@@ -1,0 +1,6 @@
+  FRM (f) : Formate la commande SQL en argument par JSQLParser
+  Notes : - requiert la bibliothèque jsqlparser.jar à charger par
+  la commande : use frm
+  Documentation : http://jsqlparser.sourceforge.net/example.php
+
+  Attribue le code SQL formaté à _RET_VALUE.

@@ -1,0 +1,82 @@
+  FOR : Parcours d'une liste ou du résultat d'une requête SELECT
+            ou du contenu d'une table de la base.
+  FOR <liste_vars> <liste> <bloc commandes...>
+  FOR [-s=<sep>] var {liste valeurs} {command1 param1a param1b ...}
+     La variable <liste_vars> contient la (ou les) valeur(s) de la
+     boucle en cours (liste de variables séparées par ',').
+     L'option -s indique le séparateur (regexp). Avec l'option -s
+     la liste ne supporte pas les regroupements par "", [] ou {}.
+     La liste à itérer peut être encadrée par "", [] ou {}.
+  FOR -r <var> <range> <bloc commandes...>
+     <range> est une séquence au format début:fin:pas.
+     fin est exclue, début et pas sont facultatifs (début=0, pas=1)
+     La plage à itérer doit être encadrée par "", [] ou {}
+  FOR -q <table|requête> <bloc commandes...>
+     La table/requête peut être encadrée par "", [] ou {}.
+     Les variables locales de boucle suivantes sont disponibles :
+     - row_id   : numéro de l'enregistrement (de 1 à nb lignes)
+     - col_nb   : nombre total de colonnes
+     - col_n<i> : nom de la colonne i (i de 1 à nb col)
+     - col<i>   : val. de la ligne rowid, colonne i (de 1 à nb col)
+       Note : la variable col<i> n'est pas définie pour un NULL.
+       Pour éviter une erreur, utiliser la structure $(*x).
+       Ex. si le champ 1 peut être NULL, utiliser $(*col1)
+       Avec l'option -n, ces variables locales de boucle sont
+       remplacés par les noms des champs (si ce sont des noms de
+       variables valides, bien sûr).
+     La requête peut tenir sur plusieurs lignes et contenir des
+     commentaires SQL, mais pas avant le mot-clef "SELECT ".
+  FOR -f <var> <fichier> <bloc commandes...>
+     Parcours des lignes d'un fichier
+  Le bloc de commandes est encadré comme d'habitude par {} ou "", mais
+  de préférence {}.
+
+  Notes :
+   - comme d'habitude, si non encadrées de chaines dures {}, les
+     substitutions $ seront peut-être réalisées *en amont*
+     cf. help substitutes selon usage de "", (), {}.
+   - les vars. locales déclarées en boucle sont accessibles pour
+     tous les tours de la boucle (mises-à-jour à chaque itération).
+   - sauf en cas d'usage de substitutions en liste, il est recommandé
+     d'utiliser les délimiteurs de liste {}
+   - l'environnement local contient les options suivantes :
+     _LOOP_DEEP  : profondeur actuelle de boucle
+     _LOOP_BREAK : profondeur à l'appel à BREAK (fac.)
+
+  Exemples :
+   Supposons que la table 'test' contienne 2 colonnes.
+       FOR -q test {
+         print ligne:$(row_id): $(col_n2)=$(col2)
+       }
+       FOR -q {select id,descr from test where id<5} {
+         print ligne:$(row_id): $(col_n2)=$(col2)
+       } -- fonctionne aussi en encadrant la req. par []
+       FOR -q { select * from matable } {
+         insert into autretable values ($col1, '$col2') }
+       -- mettons que matable ait 2 champs : ID, LIB
+       FOR -qn { select ID, LIB from matable } {
+                insert into autretable values ($ID, '$LIB') }
+
+       -- exemples avec tableaux simples
+       FOR i "1 2 3" "print ^$(i%*2)" -- affiche le double
+       -- notez les ^ pour échapper la substitution
+       FOR i {1 2 3} {print $(i%*2)}  -- mieux !
+       FOR k,v {a 1 b 2 c 3} {print "$k => $v"} -- multi var
+       def a,b,c 1 2 3; FOR i [$a $b $c] {print $i} -- sub !
+       FOR i {1 {2 3}} {print $(i)} -- sans -s supporte les {}
+       FOR i -s, [1,2,3] {print $i}
+       FOR p -s: $[info PATH] {print $p} -- var. PATH (linux)
+       def -l a 1; FOR i "1 2 3" {print $(a#inc!)} -- incrémente a
+       -- cet exemple tordu combine les chiffres 1, 2 et 3 :
+       FOR i {1 2 3} { FOR j "1 2 3" { print $(i)$(j) } }
+       -- autre exemple tordu montrant l'exécution de code possible :
+       FOR -s=\| cd {print 1|print 2|print 3} { cd }
+
+       -- exemples avec plages de nombres (ranges) :
+       FOR -r i 5 {print $i}   -- boucle de 0 à 4 de pas 1
+       FOR -r i 1:5 {print $i} -- boucle de 1 à 4 de pas 1
+       FOR -r i 8:-2:-2 {print $i} -- boucle de 8 à 0 de pas -2
+
+  Ne modifie pas les constantes _RET_VALUE et _CMD_STATE (sauf erreur),
+  mais les commandes exécutées peuvent les modifier. Attribue 0 à
+  _RET_VALUE si aucun bloc exécuté.

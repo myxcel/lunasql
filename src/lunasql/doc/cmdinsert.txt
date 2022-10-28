@@ -1,0 +1,5 @@
+  INSERT : Insère des données dans la base
+  INSERT INTO <table> [( column [,...] )] { VALUES(Expression [,...]) |
+   SelectStatement}
+
+  Attribue le nombre de lignes insérées à _RET_VALUE et à _RET_NLINES.

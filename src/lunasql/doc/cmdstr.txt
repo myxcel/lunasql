@@ -1,0 +1,154 @@
+  STR : Outils de traitement de chaînes de caractères
+  STR commande chaîne [params]
+
+    Commandes (insensibles à la casse) et valeurs de retour :
+    - NEW    : -> chaîne en entrée, tout simplement
+    - LEN    : -> longueur de la chaîne
+    - EQ? : -> 1 si la chaîne 1 est égale à la 2, 0 sinon
+    - EQ-IC? : idem, mais insensible à la casse
+    - NEQ? : -> 1 si la chaîne 1 est différente de la 2, 0 sinon
+    - NEQ-IC? : idem, mais insensible à la casse
+    - INDEX  : -> index d'emplacement de la chaine 2 dans la 1
+          Ex: STR index salut lu --> 2
+    - LINDEX : -> dernier index d'emplacement de la chaine 2 dans la 1
+    - SUBSTR : -> sous-chaîne selon index fournis au format début:fin
+          Voir l'aide de la substitution $(x&d:f)
+          Ex: STR substr dorémifa 1:3,5:7 --> orif
+              STR substr dorémifa 2:-4    --> ré
+    - REPLACE : -> chaîne à occurences remplacées selon patron regexp
+          et chaîne de remplacement.
+          Ex: STR replace doréeemi `rée+` sol --> dosolmi
+    - CUT : -> chaîne tronquée à la taille n (y ajoute la chaîne s)
+          Ex: STR trunc "la belle bleue" 11 "..." --> la belle...
+    - EMPTY? : -> 1 si la chaîne est vide, 0 sinon
+    - NEMPTY? : -> 1 si la chaîne est non vide, 0 sinon
+    - HAS?  : -> 1 si la chaîne 1 contient la 2, 0 sinon
+    - DIGIT? : -> 1 si la chaîne ne contient que des chiffres, 0 sinon
+    - NUM?  : -> 1 si la chaîne ressemble à un nombre, 0 sinon
+          Note : le patron recherché est le format anglosaxon.
+    - ALPHA? : -> 1 si la chaîne ne contient que des lettres, 0 sinon
+    - ALNUM? : idem mais pour des caractères alpha-numériques
+    - LIST? : -> 1 si la chaîne ressemble à une liste, 0 sinon
+    - DICT? : -> 1 si la chaîne ressemble à un dictionnaire, 0 sinon
+    - DATE? : -> 1 si la chaîne ressemble à une date au format indiqué,
+          0 sinon. Par défaut : format dd/MM/yyyy. Documentation sur
+      https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+          Ex: STR date? 12/19/2019             --> 0
+              STR date? 12/19/2019 MM/dd/yyyy  --> 1
+    - UPPER : -> chaîne en majuscules
+    - LOWER : -> chaîne en minuscules
+    - CAPIT : -> chaîne capitalisée (1 lettre en maj, le reste en min.)
+    - TRIM  : -> chaîne sans les espaces initiales et terminales
+    - LTRIM : -> chaîne sans les espaces initiales
+    - RTRIM : -> chaîne sans les espaces terminales
+    - TRIMALL : -> chaîne sans les espaces initiales, terminales et une
+          seule espace restante entre les mots dans la chaîne
+          Ex: STR trimall "  do  ré    mi " --> do ré mi
+          Les commandes *TRIM* suppriment espaces, tab, sauts de lignes
+    - LPAD  : -> chaîne préfixée des car. fournis (ou ' ') jusqu'à n
+          Si n est plus petit que la chaîne, la chaîne est inchangée.
+          Ex: STR lpad 42 4 0    --> 0042
+              STR lpad abc 5 " " --> "  abc"
+    - RPAD  : -> chaîne suffixée des car. fournis (ou ' ') jusqu'à n
+          Si n est plus petit que la chaîne, la chaîne est inchangée.
+          Ex:  STR rpad abc 5 " " --> "abc  "
+    - STARTS? : -> 1 si la chaîne 1 commence par la chaîne 2, 0 sinon
+    - ENDS? : -> 1 si la chaîne finit par la chaîne 2, 0 sinon
+    - COMP  : -> résultat de la comparaison chaîne 1 <=> chaîne 2
+          Ex: STR comp abc abd --> 1
+    - COMP-IC  : idem, mais insensible à la casse
+    - MATCHES? : -> 1 si la chaîne correspond au patron regexp fourni,
+          0 sinon. Voir la documentation de la classe Pattern sur
+     https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
+          Ex: STR matches? bonjour `.*our` --> 1
+    - SPLIT  : coupe la chaîne par le car. regexp fourni, -> list
+          Ex: STR split "do,ré mi,fa" , --> do {ré mi} fa
+    - CONCAT : concatène toutes les chaînes en argument
+    - REPEAT : répète la chaîne n fois (n fourni)
+          Ex: STR repeat "salut " 3 --> salut salut salut
+    - FIRST  : -> n premier(s) caractère(s) de la chaîne, défaut 1
+          Ex: STR first hello    --> h
+              STR first hello 2  --> he
+    - LAST   : -> n dernier(s) caractère(s) de la chaîne, défaut 1
+    - CHOP   : -> chaîne sans le dernier caractère
+          Ex: STR chop a,b,c, --> a,b,c
+    - REVERSE : -> chaîne inversée
+    - FIND   : -> list d'index dans la chaîne du patron regexp fourni
+          Ex: STR find "moi et toi" `oi` --> 1 8
+    - GROUPS : -> dict de tous les groupes du patron regexp fourni
+          le dict. contient les groupes numérotées de 1 à n plus 0
+          (toute la correspondance)
+          Ex: STR groups "21/03/2012" `(\d{2})/(\d{2})/\d{4}`
+    - FORMAT : -> chaîne formatée sur le modèle de printf en C. Doc.
+     https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html
+          Ex: STR format "salut %s" toi --> salut toi
+    - CONVERT : -> chaîne dont les caractères de l'ensemble A sont
+          remplacés par ceux de l'ensemble B (peuvent être encadrés
+          par ``). Un ensemble est formé par des caractères (abcd)
+          ou une suite (a-d), qui peut être inversée (d-a).
+          Ex: STR convert "salut" `aeiou` `mnopq`    --> smlqt
+              STR convert ebb1aa492faae7 `a-z` `A-Z` -- comme upper
+              STR convert $s `àéèêîôùû` `aeeeiouu`   -- suppr. accents
+    - CLEANSQL : nettoie un code LunaSQL en lui retirant les espaces en
+          trop et les commentaires. De plus, si le 2ème arg. est :
+            0 : le code est ni formaté (sauts de ligne) ni indenté
+            1 : le code est formaté mais non indenté
+            2 : le code est formaté et indenté (défaut)
+          Ex: STR cleansql "if 1 {print /* foo */ bar}"  -- testez !
+    - WRAP : -> chaîne formatée en paragraphes, défaut 70 car./ligne,
+          avec ou sans marge à gauche et retrait de coupure.
+          arguments : taille de ligne désirée, chaîne représentant la
+          marge (défaut: rien), mode de retrait de 1ère ligne
+          (0: aucun (défaut), 1: droite, -1: gauche).
+          Les sauts de lignes sont respectés. Si des espaces finissent
+          la chaîne, ils servent de modèle pour supprimer les retraits
+          (le retrait final est supprimé à chaque début de ligne).
+          Ex: STR wrap $longTexte -- lignes de 70 car. sans retrait
+              STR wrap $longTexte 60 $<e*3> 0
+          Nunc vero inanes flatus quorundam vile esse quicquid
+          extra urbis pomerium nascitur aestimant praeter orbos et
+          caelibes, nec credi potest qua obsliberis Romae.
+              STR wrap $s 60 $<e*4> 1
+             Nunc vero inanes flatus quorundam vile esse quicquid
+          extra urbis pomerium nascitur aestimant praeter orbos et
+          caelibes, nec credi potest qua obsliberis Romae.
+              STR wrap $s 60 $<e*4> -1
+          Nunc vero inanes flatus quorundam vile esse quicquid extra
+             urbis pomerium nascitur aestimant praeter orbos et caelibes,
+             nec credi potest qua obsliberis Romae.
+    - ASC  : -> code ASCII du caractère fourni
+    - CHR  : -> caractère du code ASCII fourni
+    - NEXT : -> chaîne incrémentée. Ex 'ab' -> 'ac'
+    - B64ENC : -> chaîne encodée en base64. La longueur de ligne base64
+          peut être fournie en 2ème arg (minimum 4).
+          Ex: STR b64enc "içi c'est l'été" --> acOnaSBjJ2VzdCBsJ8OpdMOp
+          Ex: STR b64enc "içi c'est l'été" 12 --> (idem sur 2 lignes)
+    - B64DEC : -> chaîne base64 décodée
+    - HEXENC : -> chaîne encodée en hexadécimal. La longueur de ligne
+          hexadécimale peut être fournie en 2ème arg (minimum 2).
+    - HEXDEC : -> chaîne hexadécimale décodée
+    - VIGENC : -> chaîne encodée par Vigenère (clef de 3 car. préfixée)
+    - VIGDEC : -> chaîne Vigenère décodée
+          Note : taux d'erreur vigenc/vigdec d'environ 8 pour 1000
+    - ZIPENC : -> chaîne gzippée encodée en base64 (cf. B64ENC)
+          Ne prend pas en charge tous les caractères, ni \r\n\t
+    - ZIPDEC : -> chaîne gzippée décompressée (entrée en base64)
+    - CODE : -> hashcode Java hexadécimal de la chaîne (<= 32 bits)
+    - HASH : -> empreinte CRC32 hexadécimale de la chaîne (32 bits)
+    - DIGEST : -> empreinte SHA-1 de la chaîne selon format fourni
+          'hex' (défaut), 'b64', sinon binaire (160 bits)
+    - LEVEN : -> distance de Levenstein entre deux chaînes
+    - NORM : -> chaîne normalisée (sans accents)
+    - ESCAPE : -> chaîne avec ' échappés par le 2nd arg. (défaut '\')
+          Ex: STR escape "c'est l'autre"       --> c\'est l\'autre
+              STR escape "c'est l'autre" \\    --> idem (notez '\\')
+              STR escape "c'est l'autre" $<c>  --> c^'est l^'autre
+              STR escape "c'est l'autre" \^$   --> c$'est l$'autre
+    - FROMCSV : -> liste correspondant à la (aux) ligne(s) CSV lue(s)
+          avec sép:; délim:" échap:\ début:0
+          Ex: STR fromcsv {"do";"ré";"mi fa"} --> do ré {mi fa}
+
+  Notes : les opérations fonctionnent sur les valeurs et non sur les
+          références. Il n'y a pas de modification de variable.
+          Il est possible et recommandé d'encadrer les regexp par ``.
+  Attribue à _RET_VALUE la valeur générée par la sous commande.

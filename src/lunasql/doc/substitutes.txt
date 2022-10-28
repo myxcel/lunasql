@@ -1,0 +1,70 @@
+Il existe deux types de substitutions :
+
+Les substitutions normales (différées) sont introduites par $.
+
+Elles sont groupées en *un seul* argument.
+Pour l'usage des expressions à substituer, voir l'aide "expressions".
+Il peut arriver qu'il faille pourtant "dégrouper" l'argument. Pour
+cela préfixer l'argument par ~ (échappable par ^), ou bien utiliser
+la substitution par liste (précoce par § si :LIST_SUBSTIT à 1).
+Exemples :
+  def nbargs { print $(arg_nb) } -- nombre d'arguments
+  nbargs "do ré mi"   --> 1
+  nbargs "~do ré mi"  --> 3
+  nbargs "^~do ré mi"  --> 1, car ~ est ici échappé
+  def f { return do ré mi }
+  nbargs $[f]  --> 1
+  nbargs ~$[f]  --> 3
+  opt :LIST_SUBSTIT 1; nbargs §[f]  --> 3
+Notes : - aussi bien avec $ que ~$, on ne peut avoir nbargs = 0 dès
+    lors que l'on passe un argument
+    - attention à l'usage de ~ : il dégroupe aussi bien les substit.
+    que les chaînes de caractères !
+
+Exemple :
+  def f {put}
+  nbargs $[f]  --> 1 et non 0
+  nbargs ~$[f] --> idem
+  nbargs §[f]  --> 0, ok (si :LIST_SUBSTIT est à 1)
+Mais :
+  print "~ cette   /* non affiché ! */
+    chaîne   va     être
+    dégroupée     !"  --> cette chaîne va être dégroupée !
+
+Les substitutions précoces (ou par listes) sont introduites par §.
+
+Positionner :LIST_SUBSTIT à 1 pour les activer.
+Elles sont utilisables sur le même modèle que $. La grosse différence
+est que la substitution est précoce, *avant* l'analyse du code et donc
+le groupage des arguments. C'est une sorte de pré-processeur.
+Exemple d'application (voir aussi l'exemple ci-dessus) :
+  def l do ré mi
+  def nbargs { print $arg_nb }
+  nbargs $l --> 1
+  nbargs §l --> 3 : passage par liste
+Autre exemple tordu :
+  def c "/*"
+  print §c commentaire pas affiché */
+Notes :
+    - le texte en commentaire, ainsi que les chaînes dures sont
+      aussi concernés par cette substitution précoce !
+    - les structures suivantes ne fonctionnent donc pas car § est
+      substitué de façon précoce (substitution avant éval. du bloc) :
+      def a 123; print §a        -- une ligne en console = 1 bloc
+      def f { a 123; print §a }  -- une macro = 1 bloc
+
+Les substitutions par listes sont utiles pour passer une liste
+d'arguments car elles évitent le groupage. Elle peuvent être utiles
+également pour insérer du code factorisable (sorte de modules).
+Exemple :
+  def code {
+    --code partagé à déclarer au préalable
+    print code
+  }
+  def f {
+    -- fonction appelée ultérieurement
+    print début
+    §code     -- ici code est inséré non groupé
+    print fin
+  }
+

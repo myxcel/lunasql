@@ -1,0 +1,13 @@
+  MERGE : Fusionne les données de deux tables
+          Met à jour les lignes existantes, et insère les autres.
+          Vérifiez si MERGE est disponible sur votre SGBD.
+  MERGE INTO tableName USING tableRefName
+  ON (conditions)
+  WHEN MATCHED THEN
+    UPDATE SET table1.colonne1 = valeur1, table1.colonne2 = valeur2
+    DELETE WHERE conditions2
+  WHEN NOT MATCHED THEN
+    INSERT (colonnes1, colonne3)
+    VALUES (valeur1, valeur3)
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.

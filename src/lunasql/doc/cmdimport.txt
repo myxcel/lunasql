@@ -1,0 +1,64 @@
+  IMPORT (IM) : Ajoute à la table en paramètre le fichier spécifié
+  IMPORT nom_fichier.ext nom_table1
+  IMPORT nom_fichier.ext
+  IMPORT -f s Recherche les fichiers dont le nom correspond à
+       l'expression régulière s et les importe chacun en table ad hoc
+       L'expression s peut être encadrée par ``.
+       ex. tb.*[.]csv équivaut au shell tb*.csv
+   Sans table renseignée, le nom de fichier est pris pour table.
+   Les adresses en http(s)://, ftp:// et file:// sont supportées.
+   Les fichiers zippés (extension .csv.gz ou .csv.zip) ou chiffrés
+   (extension .csv.cry, algo AES128) sont supportés. Si extension cry
+   (mode chiffrement), la clef est fournie par l'option -k et peut faire
+   128 ou 256 bits (seuls les 128 ou 256 premiers bits (forts) sont
+   retenus pour la clef, format hex obligatoire, ex. par commande HASH).
+   Formats acceptés : CSV (sép. ';') et TXT (le choix est fait selon
+   extension du fichier). Les commentaires, introduits par # en début
+   de ligne, sont supportés, et les lignes vides sont ignorées.
+   Il est concédé le support de SQL (renvoi à la commande EXEC).
+
+  Options supplémentaires :
+    -c tb   : importe en table tb le contenu TXT du presse-papier
+    -d      : le fichier ne contient pas de noms de colonnes
+    -h head : idem mais on fournit les entêtes sous forme de liste SQL
+    -o opts : importe selon options de format CSV opts spécifié
+       avec opts : first_line,quote_char,escape_char
+       Les 3 options doivent obligatoirement être spécifiées
+       Options par défaut : 0,",\
+    -t      : spécifie les colonnes à importer au format date avec
+       conversion de la chaîne en date selon le format fourni
+       '#data' est remplacé par le nom de la colonne
+       '|' est séparateur d'expression, si plusieurs colonnes de date
+       Avec l'option -l, spécifiez une locale pour le format de date
+       parmi : FR, DE, IT, ZH, TW, CA, CAF (français), US, UK, JP, KO
+    -q      : importe le résultat d'une requête SQL (cf. ci-dessous)
+       avec -q (et la bibliothèque CsvJdbc en CLASSPATH), l'option -p
+       passe à CsvJdbc le dictionnaire {clef=valeurs} (cf doc CsvJdbc).
+       Chaque fichier du rép. est une table (omettre l'extension). Le
+       format de fichier est CSV séparateur point-virgule, et il est
+       possible d'encadrer la requête par {}.
+       Documentation : http://csvjdbc.sourceforge.net/doc.html
+
+  Notes :
+    - les champs numériques vides sont traités comme des NULL. De même,
+      une chaîne "<NULL>" remplissant un champ est insérée en NULL
+    - en cas d'erreur 'IOException : Not in GZIP format', la clef de
+      déchiffrement est sûrement erronée
+    - selon les SGBD, il est possible d'importer facilement du CSV,
+      par exemple pour sélectionner les colonnes/lignes à importer.
+      Ex. H2 : SELECT * FROM CSVREAD('fichier.csv');
+
+  Exemples : IMPORT -f `tb.*[.]csv`
+             IMPORT -f `tb.*[.]csv` -o {3,",\}
+             IMPORT table.csv -- le fichier porte le nom de la table
+             IMPORT -d data.csv table -- le fichier n'a pas d'entêtes
+             IMPORT -h=ID,LIB data.csv table -- entêtes fournies
+             -- exemple sur H2 avec donnée '3 Feb 2001 03:05:06 GMT'
+             IMPORT table.csv table -t 'd MMM yyyy HH:mm:ss z' -l US
+             -- chiffrement
+             IMPORT test.csv.cry TB_TEST -k=$[hash clefsecrete]
+             -- import depuis CsvJdbc
+             IMPORT -q data/ TB_TEST select col1, col2 from csvfile
+
+  Attribue le nombre de lignes du dernier import à _RET_NLINES
+  et le nombre total à _RET_VALUE

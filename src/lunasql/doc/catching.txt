@@ -1,0 +1,29 @@
+En cas d'erreur, l'option :EXIT_ON_ERR permet ou non d'interrompre
+l'exécution (bloc de code courant, ex. fichier sql) et de sortir.
+Dans tous les cas, le contenu de l'option :ON_ERROR est évalué.
+
+Cas selon valeurs de :EXIT_ON_ERR (EOE) et bloc :ON_ERROR (BOE),
+en cas d'erreur, que se passe-t-il ?
+EOE   BOE                   Effet
+1     vide                  sortie simplement sur l'erreur
+1     non vide sans exit    BOE exécuté avec sortie sur l'erreur
+1     non vide avec exit    BOE exécuté avec sortie sur EXIT
+0     vide                  rien (donc reprise après l'erreur)
+0     non vide sans exit    BOE exécuté puis reprise après l'erreur
+0     non vide avec exit    BOE exécuté puis sortie sur EXIT
+
+En bloc :ON_ERROR, les variables locales suivantes sont disponibles :
+     - err_lng : numéro de ligne de l'erreur
+     - err_cmd : commande ayant lancé l'erreur
+     - err_msg : message d'erreur complet
+     - err_stk : pile d'appels
+
+Un autre mécanisme de gestion d'erreur est implanté dans la commande
+EVAL (cf. aide EVAL). Les deux mécanismes sont complémentaires.
+
+Notes : - :ON_ERROR n'est pas exécuté sur un appel à EXIT, ni en cas
+          d'erreur déjà rattrapée par EVAL -c
+        - les options _ERROR_CMD et _ERROR_MSG fournissent des
+          renseignements sur les erreurs non attrapées.
+
+« Dans le doute, reboote ; si ça rate, formate. » (mimi, 05/10/2017)

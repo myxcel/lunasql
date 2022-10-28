@@ -1,0 +1,10 @@
+  VOID (.) : Ne fait absolument rien !
+  Les sustitutions sont tout de même réalisées. Cela permet par
+  exemple d'exéuter du code silentieusement.
+  Exemple:
+     def reponse 42; VOID $(reponse#inc!)  --> reponse = 43
+  Comparer :
+     VOID $[return exécuté]
+     VOID $[print exécuté]
+
+  Ne modifie pas la constante _RET_VALUE, mais les substitutions oui.

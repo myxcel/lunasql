@@ -1,0 +1,85 @@
+  == Version 4.9 Quincella ==
+   * Ajout des commandes APPEND, NET (GET, POST)
+   * Ajout de l'API en serveur HTTP pour requêter du code LunaSQL
+   * Ajout de la signature de fichiers/scripts par EdDSA et des
+     commandes SIGN (signature, génération de clef), VERIFY
+   * Sécurisation du chiffrement en CRYPT, EXPORT (mode CBC)
+   * Prise en charge des fichiers .cry en EXEC
+   * Ajout des options ALL?, ANY? en DICT; -t, -l en IMPORT; -c, -d en
+     CSV, -p en HASH, -f en CRYPT/DCRYPT, -o en CONFIG
+   * Ajout de la commande en bibliothèque REPORT
+   * Ajout des menus Signer en Vérifier en éditeur
+   * Ajout du paquet 'const'
+   * Correction de quelques bogues et diverses améliorations
+
+  == Version 4.8 Pélissa ==
+   * Ajout du préfixage des commandes par =, et des alias par *
+   * Ajout de l'option de lancement --deny-opt-command, de l'option
+    _SQL_UPDATE et --deny-sql-update, et de l'option --need-version
+   * Ajout des options REDEFINED, NOCIRCCTRL en INFO; -w, FILE (-f),
+     ERRFILE (-u), SUSPEND (-s), RESUME (-r), en SPOOL (renommage de
+     l'ancienne -s); -n en EXPORT; -a, -r en DEF; -q en XML; -y en DEF,
+     CHOP en STR, mode retrait -1 en STR WRAP, 'cancel' pour :ON_INIT
+     et :ON_QUIT
+   * Retrait de l'option INFO mac.address
+   * Ajout de l'option :ALLOW_REDEF et possibilité de redéfinir une
+     commande interne par un alias
+   * Renforcement du contrôle de ref. circulaire des alias/macros
+   * Suppression de la bibliothèque Jansi
+   * Correction de pas mal de bogues
+
+  == Version 4.7 Olivia ==
+   * Ajout de la commande NEXT
+   * Ajout des options -t en HELP, -e en HIST; TOLINES, VIGENC, VIGDEC,
+     CONVERT en STR; REDUCE, FIRST, LAST, EACH, REPEAT, ZEROS, ONES,
+     REVERSE en LIST; EACH, MERGE en DICT; EACH, EACHLN en FILE; REPEAT,
+     WAIT, DELAY en TIME; -v, -f en EVAL; FIND, STACK en INFO; -r/-d à
+     INPUT, -n en FOR
+   * Ajout de la validation des arguments en commande ARG
+   * Ajout des modif. de variable : fonction #flat
+   * Ajout de la commande XML (module xml)
+   * Ajout des variables locales this_scope, super_scope et scope_deep
+     en Lecteurs
+   * Ajout de l'option :ADD_ROW_NB
+   * Ajout de la bibliothèque obj
+   * Amélioration de l'aide de defmacro
+   * Amélioration de la gestion de :HISTORY_DBL (0, 1 ou 2)
+   * Ajout des substitutions de caractères : {}[]<>()
+   * Ajout des options :ON_INIT et :ON_QUIT
+   * Retrait des options :DEEP_SUBSTIT et :EASY_SUBSTIT
+   * Ménage fait dans les bibliothèques JS et dans les aides
+   * Quelques corrections de bogues, comme d'habitude
+
+  == Version 4.6 Nathalia ==
+   * Ajout de la commande PUT
+   * Ajout des options PUSH, TOCSV en LIST, FROMCSV en STR; -t, -n à
+     EVAL (suppression de -e); -l à OPT (options locales); NEW,
+     DATETIMEMS, ATDO, AFTERDO à TIME; 'date/heure' à WAIT; WHATIS,
+     TABLES, SYSTABLES à INFO
+   * Ajout de l'option _ERROR_CMD
+   * Ajout de la profondeur en commande BREAK
+   * Pour TIME, les dates et formats peuvent être encadrés par ''
+   * Ajout du support de [] pour les listes et FOR
+   * En mode :END_CMD_NL=0, les ; finaux en sous-lecteurs sont
+     facultatifs
+   * Ajout du forçage de résolution d'alias par préfixe ':'
+   * Ajout des commentaires simple-ligne actifs par --~
+   * Ajout du choix du SE pour la notation '+' de EXEC et START
+   * Ajout des substitutions en paramètres optionnels pour ARG
+   * Ajout de fonctions sur tables en éditeur UI
+
+  == Version 4.5 Marina ==
+   * Ajout des commandes EXPLAIN, TREE
+   * Ajout de l'option :ROW_MAX_NB
+   * Ajout des options -h en DEF, PICK, en LIST, LOCAL en DICT; SCAN,
+     BYTES en FILE, NEMPTY?, ZIPENC, ZIPDEC en STR; -c, -m en SHOW
+   * FILE DUMP et LIST/LINES/VIEW peut lire/écrire en gzip
+   * Ajout du support des multi var. pour la commande FOR
+   * Retrait du support des chaînes dures !! !!, et les {} sont retirés
+     de la chaîne dure qu'ils encadrent
+   * Ajout de la césure d'arguments par préfixe #
+   * Adaptation du ScriptEngine à Nashorn (Java 8) et amélioration de
+     la gestion globale des SE
+   * Ajout des listes de tables et de variables en éditeur (EDIT)
+   * Modernisation de la console web http-console
+

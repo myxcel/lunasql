@@ -1,0 +1,116 @@
+/*
+ * MyCalendar.java a simple program to print the calendar of a month / year.
+ * This program gets two integers from user:
+ * - the index of the month (1-12)
+ * - the year number
+ *
+ *  For example, the user would enter
+ *  7 2010
+ *  for July 2010.
+ *  Then, this program will print the calendar of that month.
+ *
+ * En LunaSQL:
+def calendar {
+  if $(arg_nb)==1 {
+    def month $(arg1)
+    def year  $(_DAY_DATE_F&0-3)
+  } elseif $(arg_nb)==2 {
+    def month $(arg1)
+    def year  $(arg2)
+  } else {
+    def month $(_DAY_DATE_F&4-5)
+    def year  $(_DAY_DATE_F&0-3)
+  }
+  exec calendar.bsh $(month) $(year)
+  undef month year
+}
+ */
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+
+/*
+ * prints a calendar month based on month / year info
+ */
+private static void printCalendarMonthYear(int month, int year) {
+    // create a new GregorianCalendar object
+    Calendar cal = new GregorianCalendar();
+    // set its date to the first day of the month/year given by user
+    cal.clear();
+    cal.set(year, month - 1, 1);
+    // print calendar header
+    System.out.println("\n" + cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
+                                    Locale.US) + " " + cal.get(Calendar.YEAR));
+    // obtain the weekday of the first day of month.
+    int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
+    // obtain the number of days in month.
+    int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    // print anonymous calendar month based on the weekday of the first
+    // day of the month and the number of days in month:
+    printCalendar(numberOfMonthDays, firstWeekdayOfMonth);
+}
+
+/*
+ *      prints an anonymous calendar month based on the weekday of the first
+ *  day of the month and the number of days in month:
+ */
+private static void printCalendar(int numberOfMonthDays, int firstWeekdayOfMonth) {
+    // reset index of weekday
+    int weekdayIndex = 0;
+    // print calendar weekday header
+    System.out.println("Su  Mo  Tu  We  Th  Fr  Sa");
+    // leave/skip weekdays before the first day of month
+    for (int day = 1; day < firstWeekdayOfMonth; day++) {
+            System.out.print("    ");
+            weekdayIndex++;
+    }
+    // print the days of month in tabular format.
+    for (int day = 1; day <= numberOfMonthDays; day++) {
+        // print day
+        System.out.printf("%1$2d", day);
+        // next weekday
+        weekdayIndex++;
+        // if it is the last weekday
+        if (weekdayIndex == 7) {
+            // reset it
+            weekdayIndex = 0;
+            // and go to next line
+            System.out.println();
+        } else { // otherwise
+            // print space
+            System.out.print("  ");
+        }
+    }
+    // print a final new-line.
+    System.out.println();
+}
+
+/*
+ * The main program asks users for month and years,
+ * then it evaluates the weekday of the first day
+ * of that month as well as the number of days in that
+ * month.
+ */
+// represents the month (1-12)
+String monthText = scr_args.get(0);
+// represents the year
+String yearText = scr_args.get(1);
+try {
+    // convert month and year to integer.
+    // throws NumberFormatException if not convertible.
+    // It would be caught below:
+    int month = Integer.parseInt(monthText);
+    int year = Integer.parseInt(yearText);
+    // check if it is a valid month
+    if (month < 1 || month > 12)
+            throw new Exception("Invalid index for month: " + month);
+    // print the calendar for the given month/year.
+    printCalendarMonthYear(month, year);
+} catch (NumberFormatException e) {
+     // handles NumberFormatException
+     System.err.println("Number Format Error: " + e.getMessage());
+} catch (Exception e) {
+     // handles any other Exception
+     System.err.println(e.getMessage());
+}

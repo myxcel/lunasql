@@ -1,0 +1,13 @@
+  NEED : Teste si la version en cours en compatible avec le requis
+         Si le num. requis est supérieur à celui du module, le script
+         SQL est interrompu.
+  NEED <min_version> [-x <max_version>]
+
+    Exemples : NEED 4.4.3.0
+               NEED 4 -x 4.2
+
+  Note : en cas d'erreur de version signalée par NEED, le script (ou la
+    portée en cours d'exécution) est arrêté quelque soit la valeur de
+    :EXIT_ON_ERR.
+
+  Attribue la différence (numérique) à la constante _RET_VALUE.

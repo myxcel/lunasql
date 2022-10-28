@@ -1,0 +1,4 @@
+  DELETE : Supprime des données de la base
+  DELETE FROM table [WHERE Expression]
+
+  Attribue le nombre de lignes insérées à _RET_VALUE et à _RET_NLINES

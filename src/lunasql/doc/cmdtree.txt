@@ -1,0 +1,24 @@
+  TREE : Affiche un arbre des clefs étangères d'une table
+  TREE table    Affiche l'arbre en profondeur 3
+  TREE table n  Affiche l'arbre en profondeur n
+
+  L'arbre de références des clefs étrangères est créé pour la table à
+  partir de ses clefs qui sont référencées dans d'autres tables.
+
+  Avec l'option -d, génère un digraph au format DOT GraphViz
+  (voir http://graphviz.org).
+  En cas de référence circulaire, '(...)' est ajouté à la ligne.
+  Ne fonctionne pas sur tous les SGBD (ou bien c'est un bug ?).
+
+  La représentation de base est du type (ex. TREE TYPESPRO):
+    TYPESPRO(ID)
+    |
+    +-- PRODUITS(IDTYP)
+        PRODUITS(ID)
+        |
+        +-- COMMANDES(IDPRO)
+        PRODUITS(ID)
+        |
+        +-- RAPPORTS(IDPRO)
+
+  Ne modifie pas la constante _RET_VALUE.

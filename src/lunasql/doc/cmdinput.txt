@@ -1,0 +1,30 @@
+  INPUT (>) : Affiche une invite de saisie au clavier et retourne.
+  INPUT [opt] <invite>   Invite de saisie
+  Options :
+    -p    : saisie de mot de pâsse
+    -i    : invalidation des $ par des # (empêche substitutions)
+    -f=frm : contrôle du format de saisi selon commande ou regexp
+     frm : exp. rég. encadrée par ` et `, ou commandes suivantes :
+     int, num, bool (0,1,t(rue),f(alse)), yesno (y[es],n[o[n]],o[ui]),
+     id (nom de var.), char, word (lettre, chiffre, _), date,
+     datetime, dateus (format US), alpha, alphanum, alphauc
+     (maj.), alphalc (min.), email, str (tout, défaut).
+    -t=sec : temps de réponse maximal autorisé (en secondes)
+    -d=str : valeur par défaut à retourner en cas de saisie vide
+    -r=str : valeur par défaut à retourner en cas d'interruption
+             (par Ctrl+C ou temps dépassé avec option -t)
+
+  Notes : les $ saisis ne seront pas substitués. Mais en cas d'usage
+    ultérieur de la valeur saisie, et pour éviter toute exécution de
+    code exécutable potentiellement dangereux, utilisez l'option -i.
+    Les options avancées (-p, -t) ne sont disponibles qu'en appel par
+    console (c'est-à-dire LunaSQL exécutée avec l'option --console).
+
+  Exemples :
+     INPUT -f=email "Votre adresse e-mail ? "
+     INPUT -i -f=`0\d\.(\d\d\.){3}\d\d` "Votre numéro de tél ? "
+     INPUT -p "Entrez le mot de pâsse: "
+     INPUT "Nom de variable ? " -f=id -t=10 -d=name
+     if [ '$[INPUT -r=<nil>]' == '<nil>' ] { print Annulation }
+
+  Attribue le message saisi à la constante _RET_VALUE.

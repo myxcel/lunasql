@@ -1,0 +1,102 @@
+  EXEC (@) : Exécute le fichier de commandes SQL/SE en paramètre
+   Le choix SQL / ScriptEngine est fait sur l'extension ou du symbole
+   du premier argument ('-' : LunaSQL, '+[engine]' : SE).
+   Les scripts sont recherchés dans les répertoires de l'option
+   :SCRIPTS_PATH, ou bien renseignés en chemins absolus. Si la
+   politique de sécurité est activée (option :SIGN_POLICY à 1 ou 2),
+   les scripts doivent être signés numériquement (commande SIGN en
+   bibliothèque 'crypt'). La signature externe est d'abord recherchée
+   (extension .sig au fichier) puis, si absente, interne.
+
+   Sont supportés :
+    - les fichiers scripts LunaSQL et SE (JS ou si bibliothèque en CP)
+      présents en répertoire :SCRIPTS_PATH, avec signature interne ou
+      non (selon :SIGN_POLICY). Notez que les signatures internes sont
+      encadrées par commentaires SQL/JS (/*...*/), donc ne sont pas
+      adaptées aux SE utilisant une autre syntaxe de commentaires.
+    - les adresses en réseau en http(s)://, ftp:// et file://
+    - les adresses de ressources préfixées par 'jar:'
+    - les fichiers zippés .gz (ex. : extension .sql.gz), dont ceux
+      dont le fichier texte contient une signature interne
+    - les fichiers chiffrés .cry (ex. : extension .sql.cry), dont ceux
+      générés par les commandes CRYPT et EXPORT (sql), mais la
+      signature doit être externe (pas de lecture de signature interne
+      en fichier chiffré). La clef de déchiffrement (128/256 bits) doit
+      être le premier argument, au format hexadécimal.
+
+   Attention aux références de script circulaires !
+
+  - Cas SQL (extensions .sql, .lsql et .luna) :
+    EXEC nom_script1.sql param1 param2 ...
+    Exemples :
+      EXEC /chemin/vers/script.sql    -- chemin absolu
+      EXEC prog.luna   -- recherche en :SCRIPTS_PATH
+      EXEC compressed.sql.gz              -- le script est compressé
+      EXEC encrypted.sql.cry 1234...CDEF  -- le script est chiffré
+      EXEC file:///Users/scripts/test.sql param1 param2 ...
+      EXEC https://domain.fr/scripts/test.sql param1 param2 ...
+      EXEC jar:/lunasql/misc/test.sql param1 param2 ...
+      -- notation '-' pour exécution des arguments de la commande
+    EXEC - "cmd1; cmd2; cmd3 ..." param1 param2...
+    Exemple :
+      EXEC - "print ^$(arg1)" 56 toto  --> 56
+
+    En fichier, il est pratique de déclarer ainsi des macros. Le code
+    multiligne est alors encadré par "" ou mieux {} car alors les
+    substitutions sont différées. En outre pour la déclaration de
+    macros en production (bibliothèque de macros), utiliser plûtot la
+    commande USE, qui gère les dépendances (chargement unique).
+
+   Variables disponibles (en plus des var. de portée) :
+     script_arg1, script_arg2... : Arguments éventuels passés
+     script_arg_ls  : Liste des arguments
+     script_arg_nb  : Nombre d'arguments
+     script_path    : Chemin absolu du fichier script
+     script_name    : Nom du fichier script
+     this_scope     : Nom du fichier script
+    Ces variables sont bien sûr locales au Lecteur en cours, ou portée
+    (par exemple la fonction ou le script).
+    Exemple :
+     def info-user {    -- déclaration d'une fonction en script
+       print "Infos sur $(arg1)"  -- pas d'échappement du $ car en {}
+       select Code, NomPrenom "Nom", Fonction ^
+       from Utilisateurs where Code='$(arg1)'
+     }
+     -- mieux :
+     defmacro info-user {user} {    -- idem
+       print "Infos sur $(user)"  -- pas d'échappement du $ car {}
+       select Code, NomPrenom "Nom", Fonction ^
+       from Utilisateurs where Code='$(user)'
+     }
+
+  Codage des caractères en fichier de script :
+    Le codage des fichiers par défaut est "UTF-8", mais peut être
+    spécifié en option :ENCODING. À noter que la BOM (Byte Order Mark,
+    ou séquence EF BB BF en début de fichier) n'est pas supportée.
+
+  - Cas ScriptEngine (SE, toutes autres extensions) :
+    La bibliothèque doit être présente en CLASSPATH et membre de SE
+    EXEC nom_script param1 param2 ...
+    Exemples :
+      EXEC script2.rb param1 param2   -- SE JRuby
+      EXEC /chemin/vers/script.js     -- chemin absolu
+      EXEC prog.js   -- recherche en :SCRIPTS_PATH
+      EXEC compressed.js.gz              -- le script est compressé
+      EXEC encrypted.js.cry 1234...CDEF  -- le script est chiffré
+    -- notation '+' pour exécution des arguments de la commande
+    EXEC + "cmd1; cmd2; cmd3 ..." param1 param2...
+    EXEC +engine "cmd1_engine" param1 param2...
+      Exemples : EXEC + "print(scr_args.get(0)+'\n')" 56 toto  -- 56
+                 EXEC +beanshell {fonction_bsh();}
+                 EXEC +Clojure { (println "n =" (+ 5 2)) }
+    Moteur par défaut : js (selon constante _EVAL_ENGINE)
+    Variables disponibles :
+     sql_connex     : (SQLCnx) Connexion à la base de données
+     script_args    : (ArrayList) Arguments en commande
+     script_path    : (String) Chemin absolu du fichier script
+     script_name    : (String) Nom du fichier script
+
+  Voir l'aide de la commande ENGINE pour des exemples plus complets.
+  Doc. Javascript : https://developer.mozilla.org/fr/docs/JavaScript
+
+  Attribue la valeur de RETURN du script à la constante _RET_VALUE

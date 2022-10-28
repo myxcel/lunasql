@@ -1,0 +1,5 @@
+  REVOKE : Retire les droits précisés à l'utilisateur
+  REVOKE [ GRANT OPTION FOR ] privilèges ON database_object
+    FROM ( PUBLIC | user_list )
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.

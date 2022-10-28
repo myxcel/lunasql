@@ -1,0 +1,17 @@
+  BREAK : Sort d'une boucle FOR ou WHILE.
+  BREAK    : Sort de la boucle la plus interne (équivaut à BREAK 0)
+  BREAK n  : Sort de toutes les boucles jusqu'au niveau le lecteur n
+
+  Exemples :
+    for -r i 5 { print $i; if $i==2 BREAK } -- sort au bout de 3
+    i=0; while i++<10 {/* traitement */ BREAK}
+    i=0; while i++<5 {j=0; while j++<5 {BREAK 1}; print "non affiché"}
+
+  Note : le niveau de lecteur n n'est pas forcément la profondeur des
+         boucles, mais la profondeur des lecteurs. Exemples :
+    for -r i 5 {for -r j 5 {BREAK 1}}       -- sortie au premier i
+    for -r i 5 {for -r j 5 {if 1{BREAK 1}}} -- pas de sortie pour i !
+    for -r i 5 {for -r j 5 {if 1{BREAK 2}}} -- ok
+
+  Attribue à la constante _RET_VALUE la profondeur de sortie
+  (défaut 0)

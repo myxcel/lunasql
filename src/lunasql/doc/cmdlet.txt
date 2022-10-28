@@ -1,0 +1,19 @@
+  LET (%) : évalue une expression par le moteur Script Engine
+  LET <expr>
+  'expr' est évaluée par le moteur SE courant (par défaut javascript),
+  et peut dans ce cas contenir && (et), || (ou), ! (non), parenthèses...
+  (selon la syntaxe du langage SE sélectionné). Elle peut être encadrée
+  par "", [] ou {} pour grouper une code multi-lignes ou échapper
+  des éléments syntaxiques du language.
+  Le SE rhino/nashorn fourni avec le JRE peut autoriser des structures
+  de données complexes : JSON, XML, fonctions ou création d'objets Java.
+
+  Exemples :
+    engine nashorn
+    LET { obj = { key1: {val1: 123, val2: "hello"}} }
+    print $[obj.key1.val1] --> 123
+    engine Clojure    -- bibliothèque à placer en CLASSPATH
+    LET { (defn sum [a b] (+ a b)) (sum 3 2) }  --> 5
+    print $[(sum 30 12)] --> 42
+
+  Attribue le résultat à _RET_VALUE.

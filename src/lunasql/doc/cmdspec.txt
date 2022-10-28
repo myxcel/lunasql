@@ -1,0 +1,16 @@
+  SPEC : Lance la commande SQL spécifique de la base en paramètre
+    Les commandes de sélection affichent le résultat en tableau et le
+    retournent, les autres retournent le nb le lignes affectées ou 0
+    si DDL, DCL, TCL.
+  SPEC -s sql : sélection (DML : SELECT, CALL, EXPLAIN)
+  SPEC sql    : mise-à-jour/traitement (DDL, DML, DCL, TCL)
+
+  Détail des commandes (ex. Oracle) :
+    DDL : CREATE, ALTER, DROP, TRUNCATE, COMMENT, RENAME
+    DML : SELECT, INSERT, UPDATE, DELETE, MERGE, CALL, EXPLAIN PLAN,
+          LOCK TABLE
+    DCL : GRANT, REVOKE
+    TCL : COMMIT, SAVEPOINT, ROLLBACK, SET TRANSACTION
+
+  Attribue le résultat (le cas échéant) à la constante _RET_VALUE
+  Attribue le nombre de lignes à la constante _RET_NLINES.

@@ -1,0 +1,225 @@
+  DEF (:) : Affecte une valeur (chaîne de caractère) à une variable
+    de console (variable indépendante du moteur SE.)
+  DEF [-l|-u|-h|-d|-y|-a|-r] x,y,z val1 val2 val3
+    Affecte à une ou plusieurs variable(s) les expressions listées en
+    paramètres, séparées par des espaces. Dans l'exemple ci-dessus,
+    affecte à x la valeur val1, à y la valeur val2, à z la valeur val3
+    Les valeurs en trop sont passées à la dernière var., et les var.
+    en trop reçoivent la chaîne vide "". '~' découpe les arguments.
+    Caractères spéciaux autorisés dans le nom de variable : .-_
+    Les accents sont autorisés, mais gare à l'encodage des fichiers !
+    Exemples:
+       DEF s "value of s"
+       DEF s,t,u,v do ré mi fa  -- chaque var. reçoit une valeur
+       DEF s,t,u   do ré mi fa  -- u vaut 44 45
+       DEF l "do ré mi fa"  -- liste
+       DEF s,t,u,v ~$l      -- chaque var. reçoit une valeur de l
+
+    Avec l'option -a, ajoute la valeur à la variable existante. La
+    recherche est effectuée en local puis en global. Si la variable
+    n'existe pas, elle est simplement créée avec la nouvelle valeur.
+    Exemple:
+       DEF s salut; DEF -a s " monde"   -- s vaut "salut monde"
+       -- équivalent de : DEF s salut; DEF s "$s monde"
+
+    Avec l'option -r, la (les) variables alias globales déclarées
+    seront exemptes du contrôle de référence circulaire lors de leur
+    exécution en tant qu'alias/macro, quelque soit :ALLOW_RECUR.
+
+    Avec option -l, les variables sont déclarées localement au lecteur
+    en cours (fichier ou alias de commandes). En console (un lecteur
+    racine par instruction), les variables locales (déclarées par -l/u)
+    ont la portée de l'instruction en cours. Hors console, elles ont
+    la portée du bloc {} courant (cas des commandes if, while, for,
+    eval, list, dict...).
+    L'option -u=<n> fonctionne comme -l, avec liaison de la var. aux
+    lecteurs parents, à raison de n niveaux de remontées (ainsi
+    l'option -u0 correspond simplement à -l).
+    Pour les var. locales (-l/u) déclarées par ARG et préfixées par
+    '.' il est toléré de les modifier à nouveau par DEF -l/u.
+    Sans affectation, -l liste les variables appartenant au lecteur
+    indiqué. Exemples :
+        eval {DEF -u=1 a 1; DEF -l b 2}; DEF -l a|b --> seule a existe
+        DEF f {arg .a; DEF -u=1 .a 2}; f 1 --> .a vaut 2
+
+  DEF sert typiquement aussi pour définir les alias et les macros,
+  bien que pour les macros il soit préférable d'utiliser defmacro.
+  - Un alias pourra être passé en commande et sa valeur remplacera le
+    nom de commande dans la ligne d'appel, comme un raccourci de
+    commande (requiert :ALIAS_ARG à 1).
+    Ex. DEF sel "select * from"; sel table1;
+    L'alias est déclaré par une chaîne "".
+  - Une macro pourra être passée en commande mais les arguments passés
+    seront accessibles uniquement par var. locales, et le code pourra
+    éventuellement retourner une valeur par RETURN (requiert :ALIAS_ARG
+    à 0 pour éviter l'ajout des arguments).
+    Référencement des arguments :
+    - par arguments d'exécution
+       $(arg1), $(arg2)... : Arguments éventuels passés en paramètre
+       $(arg_ls)      : Liste des arguments
+       $(arg_nb)      : Nombre d'arguments
+       ou $arg1, $arg2, $arg_ls, $arg_nb...
+    - par arguments de commande (paramètres de ligne précédente)
+       $(0) nom de la macro ; $(1), $(2)..., $(_l) la liste ; et $(_n)
+       le nombre. (Il est possible d'utiliser la syntaxe $1, $_l...).
+       Note : en déclaration de fonction, ces références doivent être
+         situées en 1ère ligne car toute commande intermédiaire les
+         écrase. Ex: DEF f {void; print $(1)}; f 123 --> erreur
+    Ex. DEF sel { select * from $(arg1) }; sel table1;
+    La macro est déclarée par une chaîne "" ou {} (substitutions
+    immédiates avec "" et différée avec {}).
+  Avec l'option -h, ajoute à la variable globale (alias/macro) une
+  chaîne d'aide accessible par la commande help.
+
+  Une fois définis, alias et macros sont appelables comme commandes.
+  Un alias peut "aliaser" une commande interne (ou plugin) ou une
+  macro, mais le préfixe ':' n'est nécessaire que pour la commande.
+  Ex : DEF f,g g {print $arg1} -- f : alias de g, g : macro
+     f 1  -- pas de préfixe ':' car f est un alias de g, une macro
+     DEF f print  -- f est un alias de print, une commande interne
+     :f 1  -- préfixe ':' nécessaire si :ALIAS_ARG à 0
+  Par exemple, defm est un alias de la macro defmacro.
+  Notes :
+    - avec la syntaxe d'alias :f, ses arguments sont évalués deux
+      fois (passage supplémentaire pour :f)
+    - une alias peut aussi être appelé en tant que référence, auquel
+      cas il remplace seulement la commande correspondante
+      Ex. DEF f print; $f 1 2 3
+
+  Positionnez :ALLOW_RECUR à 1 pour les macros récursives (boucles),
+  mais attention à ce que vous faites ! Si :ALLOW_RECUR est à 0, un
+  contrôle de référence circulaire est fait au lancement. Par contre,
+  quelque soit :ALLOW_RECUR, si l'alias/macro est préfixé par "*",
+  alors le contrôle n'est pas effectué, et la récursion est permise
+  pour la macro et son exécution (portées filles).
+  Il y a donc 3 moyens de désactiver le contrôle de réf. circ. :
+    - positionnement de :ALLOW_RECUR à 1 en amont dans la portée
+    - déclaration de la macro par DEF -r (pour les var. globales)
+    - appel de la macro en la préfixant par "*"
+
+  Si l'option :ALLOW_REDEF est positionnée à 1, alors un alias ou une
+  macro peut prendre le nom d'une commande ou d'un plugin. Attention
+  dans ce cas, pour utiliser une commande ou un plugin du même nom, il
+  faut préfixer la commande par '=' (sinon la commande est cachée par
+  l'alias, et l'exécution boucle).
+    Ex : DEF edit {print -e "ne pas appeler de commande graphique!"}
+         edit --> commande edit non exécutée, et message
+         DEF print { =print "args: $arg_ls" }  -- notez le préfixe =
+         print toto  --> args: toto
+  Note : le masquage des commandes est à vos risques et périls !
+
+  Autres usages de DEF :
+  DEF s
+    Affiche la valeur de la variable x sans aucune substitution
+    Recherche les var. (globales et locales) dont le nom correspond
+    à l'expr. régulière s et les affiche. Liste aussi les variables
+    locales (variables de lecteur) en les marquant par un '*'.
+    Avec l'option -l, la liste est limitée aux variables locales.
+    Attribue à _RET_VALUE la valeur de la dernière variable trouvée.
+    L'expression régulière s peut être encadrée par ` et `.
+      Exemples : DEF `ab.*`   Affiche les var. commençant par 'ab'
+                 DEF a|b|c  Affiche les var. a,b et c si existent
+    Si une seule variable est trouvée, retour de la valeur seul.
+
+  DEF -d=n
+  DEF -y=n
+    Avec d, détermine si la liste de var. utilisateur n sont toutes
+    définies, et retourne 1 si oui, 0 sinon. Avec y, teste en plus si
+    les var. sont toutes non vides.
+      Exemples : DEF a,b,d 1 2 ""
+                 DEF -d=a,b   -- ou DEF -d=a -d=b --> 1
+                 DEF -d=a,b,c --> 0
+                 DEF -y=a,b,d --> 0
+  DEF -e=v
+    Évalue les commandes contenues en variable v
+    Note : l'option -e ne supporte pas le passage de paramètres
+  DEF -c
+    Met aussi à jour la liste de complètement en console.
+
+  Quelques autres exemples simples :
+     DEF        Affiche les valeurs de toutes les variables globales
+     DEF x ""   Affecte la chaîne vide à x
+     DEF v,w "chaîne pour v" "chaîne pour w"  -- affectation multiple
+     DEF x,y,z ~$[get-coord-3d]   -- affectation multiple depuis macro
+        -- notez le ~ pour dissocier les 3 retours de get-coord-3d
+     DEF f {print "lorem ipsum"} -h "Affiche du texte"; help f
+     if $[DEF -d x] {print "'x' est définie !"}
+     DEF f,g g f -- si appel en macro, référence circulaire !
+
+  Notes :
+    - lors de la déclaration de macros par {}, attention à ne pas
+      insérer ou cacher un { ou } dans des commentaires en bloc :
+      Ex. DEF f {print a /* { */ b} -- /* et */ sont en bloc
+      Cet ex. appelle une autre ligne car /* et */ ne sont pas vus
+      en tant que commentaires au sein d'une chaîne {}
+      Une solution : DEF f "print a /* { */ b" -- ok
+    - il y a une différence entre $[def x], $[def -l x] et $x :
+      $[def x] : résolution de x globalement puis localement
+      $[def -l x] : résolution de x uniquement localement
+      $x : résolution de x localement puis globalement
+      Exemples :
+         eval {
+          DEF -l a foo; DEF a bar
+          print $[DEF a]    --> bar (priorité au global)
+          print $[DEF -l a] --> foo (local seul)
+          print $a          --> foo (priorité au local)
+    - les alias et macros sont appelés *après* les greffons, eux-mêmes
+      appelés après les commandes internes.
+    - les alias et macros sont sensibles à la casse majuscule/
+      minuscule (ce n'est pas le cas des commandes).
+    - pour la déclaration d'alias ou de macros globales, utilisez
+      de préférence defmacro (ou defm).
+
+  Exemples de déclaration d'une macro :
+    -- 1) Pas de nettoyage, substitutions différées à l'appel
+    DEF nom_fonc {   -- peut s'étendre sur plusieurs lignes
+      cmd1 arg1 $(1) $(2)
+      cmd1 arg1 $(arg1)   -- substitutions non échappées
+      cmd1 $(CONST)       -- différée également
+      cmd2 arg2 ; cmd3 arg3  -- les ';' sont protégés
+      cmd4 arg4              -- et ainsi de suite...
+    }
+    -- 2) Pas de nettoyage, substitutions immédiates (= chaîne)
+    DEF nom_fonc "   -- peut s'étendre sur plusieurs lignes
+      cmd1 arg1 ^$(1) ^$(2)
+      cmd1 arg1 ^$(arg1)   -- échapper les substitutions à différer
+      cmd1 $(CONST)        -- substitution immédiate (doit exister)
+      cmd2 arg2 ; cmd3 arg3  -- les ';' sont protégés
+      cmd4 arg4              -- et ainsi de suite...
+    "
+
+  Déclaration de variables avec résolution paresseuse (lazy eval):
+  Il est possible de déclarer une expression (coûteuse) mais de faire
+  qu'elle soit évaluée seulement si besoin, en stoquant son résultat.
+    Ex: def e {/* évaluation lourde */ 1*2*3*4*5*6*7*8*9*10}
+        print $(e#!eval)  -- évalué et réassigné avec le résultat
+        dict get {a=42} a ^$(e#!eval)  -- non évalué
+
+  Définition de modules (code factorisable entre macros) depuis DEF :
+    -- définition du module
+    def module1 {
+      def -u1 m1-macro1 {print "en macro 1 du module 1"}
+      def -u1 m1-macro2 {print "en macro 2 du module 1"}
+    }
+    -- utilisation du module 1 en fonction quelconque
+    def f {
+      module1  -- définition locale de m1-macro1 et m1-macro2
+      m1-macro1
+      m1-macro2
+    }
+
+  Comparatif des syntaxes au cours des versions :
+    -- 3.8
+    var func (:var l ^$(_l)^;
+               when !^$(l#empty)^; print ^$(l@0)^; end^; unvar l^;:)
+    -- 3.9
+    var func (: if ^$(arg_nb) (:print ^^$(arg1)^; :):)
+    -- 4.0, 4.1
+    DEF func !! if $(arg_nb) {: print ^$(arg1); :}!!
+    -- 4.2
+    DEF func { if $(arg_nb) { print $(arg1) } }
+    -- 4.4
+    DEF func { if $(arg_nb) { print $(arg1) } } -- ou bien
+    DEF func { arg [a1]; if $(a1#len) { print $a1 } }
+
+  Attribue la valeur de la variable fixée/listée à _RET_VALUE.

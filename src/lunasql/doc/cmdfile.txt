@@ -1,0 +1,100 @@
+  FILE : Outils de gestion de fichier et de chemins de fichiers.
+  FILE commande fichier [params]
+
+    Commandes (insensibles à la casse) et valeurs de retour :
+    - EXISTS? : -> 1 si le fichier existe, 0 sinon
+    - FILE?  : -> 1 si le fichier existe et est un fichier, 0 sinon
+    - DIR?   : -> 1 si le fichier existe et est un rép., 0 sinon
+    - ABSOL? : -> 1 si le nom est absolu, 0 sinon
+    - ABSOL  : -> nom absolu du fichier
+          Ex. FILE absol ./config.sql --> /home/.../config.sql
+    - NAME   : -> nom relatif court du fichier
+          Ex. FILE name ./config.sql --> config.sql
+    - PWD    : -> nom absolu du répertoire courant
+    - PARENT : -> répertoire parent du fichier
+          Ex. FILE name ./config.sql --> .
+    - SIZE   : -> taille du fichier (en octets)
+    - COUNT  : -> nombre de lignes (fichiers texte)
+    - SEP    : -> séparateur de nom de chemin (selon OS)
+    - PATHSEP : -> séparateur de variable PATH (selon OS)
+    - LINESEP : -> séparateur de ligne (selon OS)
+    - EXT    : -> extension du fichier (sans le .)
+          Ex. FILE name chemin/vers/config.sql --> sql
+    - CREATE : crée un nouveau fichier de nom donné vide ou rempli par
+          chaîne en 2ème argument (qui peut être encadrée par des []),
+          sans besoin d'OPEN/CLOSE
+          Ex. FILE create test.sql --> /home/.../test.sql
+              FILE create test.sql {...le contenu du fichier...}
+    - REMOVE : supprime le fichier ou répertoire de nom donné
+          Si c'est un répertoire, il doit être vide
+    - MKDIR  : crée l'arborescence de chemin donné
+    - MOVE   : déplace/renomme le fichier de nom donné
+    - COPY   : copie le fichier 1 en fichier 2
+          Ex. FILE copy init.sql save/init.sql
+    - GLOB   : -> liste de tous les fichiers du rép. donné qui
+          correspondent au patron regexp donné.
+          Ex: FILE glob -- équivalent à FILE glob . `.*`
+              FILE glob scripts `.*\.txt`  -- \ en patron échappe
+    - OPEN   : ouvre un fichier -> flux texte (entier de 0 à 1999)
+               selon mode r (lecture), w (écriture) ou a (ajout)
+          Ex. def h $[FILE open db.cfg r]  --> 1234
+    - TEMP   : -> nom complet d'un fichier temporaire, créé mais
+          supprimé à la fermeture. Le fichier n'est pas ouvert.
+          Ex. FILE temp -- équivaut à FILE temp "lunasql-"
+              FILE temp abc --> /tmp/abc2168...99.tmp
+    - READ   : lit un ou plusieurs caractères d'un flux texte
+          -> car. lu ou '' en cas de fin de fichier
+          Ex. FILE read $h 50
+    - READLN : lit une ligne du fichier texte (> fin de ligne)
+          -> ligne ou '<EOF>' en cas de fin de fichier
+          Ex. FILE readln $h
+    - WRITE  : écrit un ou plusieurs caractères dans un flux texte
+          Ex. FILE write $h message
+    - WRITELN : idem mais avec fin de ligne système
+    - CLOSE  : ferme le flux texte désigné
+    - EACH   : ouvre un fichier *texte* en lecture pour lister chaque
+          caractère et le passer à la fonction sous la référence $arg1
+          (commande ARG candidate car utilise $argX). Ferme le fichier.
+          Ex. FILE each fich.txt {print $arg1}
+              FILE each fich.txt {arg c; print car=$c}
+              def f { arg car; print car }; FILE each fich.txt f
+    - EACHLN : idem mais liste chaque ligne.
+          Ex. FILE eachln fich.txt {print $arg1}
+              FILE eachln fich.txt {arg l; print ligne=$l}
+              def f { arg line; print $line }; FILE eachln fich.txt f
+    - SCAN   : -> contenu d'un fichier *texte* selon séquence
+          de numéros de ligne début:fin (peuvent être négatifs)
+          (pas besoin d'OPEN/CLOSE)
+          Ex. FILE scan fich.txt 1:5   --> 5 premières lignes
+              FILE scan fich.txt 5     --> idem
+              FILE scan fich.txt 6:10  --> 5 lignes suivantes
+              FILE scan fich.txt -5:-1 --> 5 dernières lignes
+              FILE scan fich.txt -5    --> idem
+              FILE scan fich.txt       --> comme FILE list fich.txt
+    - LIST   : -> contenu de un ou plusieurs fichiers *texte*
+          (ou zip si extension .gz), sans besoin d'OPEN/CLOSE
+          Le nom peut être exact ou encadré par `` (regexp)
+          Ex. FILE list fich.txt fich.gz `.*[.]sql`
+              FILE dump f3 $[FILE list f1 f2] -- concat f1 f2 > f3
+    - LINES  : idem mais sous forme de liste de lignes du fichier
+          Ex. for l $[FILE lines fich.txt] {print $l}
+    - VIEW   : idem mais affiche en console avec numéros de lignes
+    - BYTES  : -> contenu du fichier au format héxadécimal
+          Ex. FILE bytes fich.bin     -- sur 1 seule ligne
+              FILE bytes fich.bin 80  -- 80 car./ligne
+    - DUMP   : écrit la chaîne en argument en fichier texte (ou zip si
+          extension .gz), sans besoin d'OPEN/CLOSE
+          -> le nombre d'octets écrits. Le fichier est écrasé.
+          Ex. FILE dump fich.txt "texte important" --> 15
+              FILE dump fich.gz "texte important zippé" --> 42
+    - INFO   : -> dictionnaire d'informations sur le fichier
+    - CHECK  : -> empreinte CRC32 héxadécimale du fichier
+    - DIGEST : -> empreinte MD5 du fichier selon format fourni
+          'hex' (défaut), 'b64', sinon binaire
+
+   Exemple de lecture de fichier par FILE OPEN et READ :
+      def h $[file open test.txt]
+      while { $[def c $[file read $h]; str nempty? $c] } { print $c }
+      file close $h; undef h c
+
+  Attribue à _RET_VALUE la valeur générée par la sous commande

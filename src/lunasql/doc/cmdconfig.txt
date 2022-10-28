@@ -1,0 +1,36 @@
+  CONFIG (cf) : Charge ou sauvegarde la configuration actuelle en
+    fichier, à savoir variables, constantes et greffons
+  CONFIG -l | LOAD <f>  Charge le fichier f
+  CONFIG -s | SAVE <f>  Enregistre en fichier f
+  Sans nom de fichier, le fichier en _CONFIG_FILE est utilisé. Sans
+  aucun argument, équivalent à CONFIG -l.
+  Avec l'option -o, seules les options (variables començant par ':')
+  sont chargées ou sauvées.
+
+  Exemple de configuration possible en fichier :
+
+-------------------------- code -----------------------------------
+# Constantes de paramétrage
+\:ALIAS_ARG   = 0
+\:PROMPT      = EXoTiQ
+# Variables et fonctions utilisateur
+cmdstat       = '$(_CMD_STATE)'=='E' ? 'ERREUR' : 'OK'
+# Greffons java
+?echo         = org.plugins.CmdEchoPlugin
+-------------------------------------------------------------------
+
+  Notes : - l'option -s n'exporte que les options et les variables
+     globales (aucun paramètre système (_*) ni var. locale)
+     - l'opérateur d'affectation peut être '=' ou ':', donc
+     chaque ':' en identifiant doit être échappé par \
+     - le code contenu en macro n'est pas interprété : ne pas
+     échapper les $ et caracères spéciaux (cf. cmdstat ci-dessus)
+     - si une bibliothèque est chargée en console (commande USE),
+     alors lors d'un SAVE, les options et variables associées seront
+     également exportées
+     - insérez un saut de ligne par la chaîne '\n'. Pour une entrée
+     sur plusieurs lignes, terminer chaque ligne par \
+     - le moteur d'analyse est le format Properties de Java. Voir
+     https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html
+
+  Attribue le nombre de var. écrites à la constante _RET_VALUE.

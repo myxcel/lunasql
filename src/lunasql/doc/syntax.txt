@@ -1,0 +1,83 @@
+Les requêtes SQL et commandes se tapent au prompt 'SQL>'.
+Les commandes peuvent être appelées par leur nom ou leur raccourci
+(ex. affichage des arguments : "PRINT" ou "<"), suivi des éventuels
+arguments séparés par au moins une espace.
+
+Il existe 6 types de commandes, dans l'ordre de résolution :
+  - les commandes SQL : interprétées par Lecteur uniquement pour les
+    substitutions, chaînes "", elles sont évaluées par le SGBD.
+    Ex : SELECT, UPDATE, COMMIT
+  - les commandes internes : ce sont des fonctions compilées en Java,
+    intégrées au fichier exécutable lunasql.jar, évaluées par LunaSQL
+    Ex : PRINT, IMPORT, ARG
+  - les greffons de commandes : comme les commandes internes, mais
+    pas intégrées au fichier lunasql.jar
+  - les macros : ce sont des fonctions interprétées en code LunaSQL,
+    déclarées par DEF, supportant les arguments nommés
+    Ex. defmacro, loaded
+  - les alias : comme les macros, mais ne supportant pas les arguments
+    nommés, ils fonctionnent comme des "raccourcis", si l'option
+    :ALIAS_ARG est à 0 ou si son nom est préfixé par ':'.
+    Si le nom est préfixé par '=' et que l'option :ALLOW_REDEF est
+    positionnée à 1, par contre, la commande du même nom (et non
+    l'alias/macro) est recherchée. Avec le préfixe '*', la macro ne
+    bénéficie pas du contrôle de référence circulaire (aussi
+    désactivable par :ALLOW_RECUR à 1).
+    Ex : defm
+  - les expressions du ScriptEngine : comme les commandes SQL,
+    interprétées par lecteur pour les substitutions, chaînes "",
+    elles sont envoyées au moteur ScriptEngine (SE) courant (par
+    défaut : js).
+
+Commentaire simple-ligne préfixé par '--' et multi-ligne encadré par
+/* */ ex. /* commentaire */. Commentaire actif introduit par --~ ou
+tout ce qui suit -~ dans un commentaire simple ligne --.
+Note : les démiliteurs /* et */ sont reconnus par modèle :
+   /* */ /**/ /*/ sont trois commentaires valides, mais
+   select /*comment*/* from test;  -- n'est pas valide
+   select /*comment*/ * from test; -- mieux
+Ex :  /* commentaire multi-ligne, pas imbricable */
+      -- commentaire simple-ligne normal
+      --~ commentaire pour SGBD, pas pour LunaSQL
+      -- commentaire -~ mais ceci est exécuté en LunaSQL
+      --~ print exon1 -- intron1 --~ exon2 -- intron2
+      -- si LunaSQL -~ opt :END_CMD_NL 0 -- en script SGBD
+
+Le caractère '^' permet d'échapper les caractères spéciaux suivants :
+'$' (substitution), fin de ligne, apostrophe, guillemets et ';'.
+Notes : - ^ ne s'échappe pas lui-même.
+    - bien que ce ne soit pas recommandé de l'utiliser,  ^ échappe
+      aussi la fin de ligne d'une fin de commentaire --
+      (attention bug : toujours laisser une espace avant --)
+
+Exécution de script (SQL, ScriptEngine) également possible en console.
+Exemples :
+  SQL> print "un texte simple";   -- commande LunaSQL
+  SQL> select * from ma_table;    -- requête SQL au SGBD
+  SQL> import contenu.csv;        -- commande LunaSQL
+  SQL> 6*Math.PI;                 -- évaluation SE
+  SQL> "function f(){...}";       -- déclaration SE js (notez les "")
+  SQL> exec script.sql;           -- exécution d'un script en console
+
+Selon la constante :END_CMD_NL, une commande peut se terminer par ';'.
+Cela est utile pour longue commande : positionner :END_CMD_NL à 0
+de façon à les devoir valider par un ';' (et non une fin de ligne).
+Note : en console, si :END_CMD_NL est à 0, les commandes *doivent*
+se terminer par ';'. En lecteur fils (script, sous commande...), le
+';' n'est qu'un *séparateur* de commandes : il n'est pas requis en
+fin de commande.
+Ex. SQL> opt :END_CMD_NL 0          -- passage en terminateur ';'
+    SQL> print $[str len hello];    -- pas de ';' en commande STR
+
+Les parenthèses, crochets, accolades, et les guillemets simples,
+doubles et inverses non refermés permettent l'écriture de la commande
+sur une une nouvelle ligne (sans usage de ^). Les guillemets doubles et
+les accolades sont supprimés après interprétation.
+Les commandes peuvent accepter des options, commençant par un tiret.
+Ex.  print -c=3 "de la couleur!"; -- écrit ce texte en vert
+Pour passer à la commande du texte commençant par '-' qui n'est pas
+une option, précéder les arguments à échapper par "--" (avec les ").
+Ex.  print "--" -ceci -est -un -texte -avec -tirets;
+
+Pour plus d'information sur les délimitations de chaînes, voir l'aide
+"delimiters".

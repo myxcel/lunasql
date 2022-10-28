@@ -1,0 +1,36 @@
+  CSV : Lit le contenu d'un CSV depuis requête SQL
+  CSV [-p {options}] <rép des CSV> <commande SELECT>
+  Chaque fichier du rép. constitue une table (omettre l'extension).
+  Le format de fichier se définit en options :
+  avec l'option -p, prend un dictionnaire {clef=valeurs}, selon
+  les clefs définies en doc http://csvjdbc.sourceforge.net/doc.html
+  La commande prend également en charge les fichiers compressés
+  (extension : .zip).
+
+  Par défaut le ResultSet est affiché en console en mode formaté
+  (comme la commande SELECT), mais ce comportement peut être modifié :
+  avec l'option -d, une liste de dictionnaires est retournée
+  avec l'option -c=<code>, un bloc de code est exécuté pour chaque
+   ligne avec comme var. locales les noms de champs de la ligne et
+   row_id le numéro de la ligne en cours.
+
+  Exemples avec un fichier 'clients.csv' en dossier 'data/' :
+    def opts {
+      headerline = ID;LIB;COMM
+      separator  = ;
+      trimValues = true
+    }
+    CSV -p=$opts data select * from clients     -- simple affichage
+    CSV -p=$opts -d data select * from clients  --> liste de dict.
+    CSV -p=$opts data select * from clients -c {
+        print "$row_id: $ID -> $LIB (commentaire: $COMM)"
+    }
+
+  Notes : - requiert la bibliothèque csvjdbc.jar en CLASSPATH, à
+            charger par la commande : use csv
+          - pour éviter qu'un tiret dans la requête soit pris comme un
+            argument, il peut être utile de l'encadrer par ""
+
+  Attribue la 1re valeur de la 1re ligne, ou avec -d la liste, ou avec
+  -c le retour de la dernière ligne à la constante _RET_VALUE et
+  le nombre de lignes retournées à la constante _RET_NLINES.

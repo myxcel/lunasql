@@ -1,0 +1,10 @@
+  EXIT : Sort des fichiers de commandes (ou les alias) SQL en
+         remontant toute la pile d'appel.
+  EXIT        Sort normalement (équivalent à EXIT 0)
+  EXIT e      Sort avec le code d'erreur positionné à e (nb entier)
+  EXIT e msg  Sort avec le code d'erreur positionné à e en affichant
+              le message msg
+  Quelque soit le code d'erreur, cette interruption n'est pas gérée par
+  :EXIT_ON_ERR et :ON_ERROR. Cf. commande ERROR.
+
+ Attribue à la constante _RET_VALUE le code d'erreur

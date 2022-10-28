@@ -1,0 +1,27 @@
+# IDE
+.idea/
+.settings/
+
+# Keys and credentials
+.songe.key*
+.songe.trust*
+config.cfg
+
+# Build files
+release/
+build/
+out/
+
+# Database
+base/
+login-list.cfg
+
+# Other exec files
+lunasql.sh
+lunasql-srv.sh
+other/
+history
+
+# Temp files
+*~
+

@@ -1,0 +1,63 @@
+  PLUGIN (pg) : Liste ou inscrit un greffon attaché à une commande
+  PLUGIN -l : liste les greffons enregistrés et leur commande
+  PLUGIN -c : supprime l'intégralité des greffons
+  PLUGIN -n : affiche le nombre de greffons enregistrés
+  PLUGIN -r <name> : supprime le greffon name
+  PLUGIN -a <name> : affiche la classe du greffon name
+    Note : le nom de greffon (nom de commande) est sensible à la casse
+  PLUGIN <full_class_name> : ajoute le plugin correspondant à cette
+    classe full_class_name. Le nom de la commande est importé.
+          Exemple : PLUGIN com.command.CmdEchoPlugin  --> ECHO
+
+  Les classes doivent se trouver dans le CLASSPATH, et le nom attribué
+   sera utilisé comme nom de commande correspondant.
+  Les classes présentes dans les rép. désignés par :PLUGINS_PATH, et
+   figurer dans le fichier de config. _CONFIG_FILE préfixé par '?'
+     Ex. ?plugin = com.command.CmdEchoPlugin
+  Les greffons sont recherchés *après* les alias et les commandes.
+  Note : pour -a, -r : le nom doit être le même que déclaré en greffon
+
+  Attribue le nom de la classe du plugin à _RET_VALUE si le traitement
+  est effectué, le nombre le lignes si liste, 0 si aucun traitement.
+
+  Exemple simple de classe greffon : commande echo (semblable à print)
+
+----------------------- code -----------------------------------
+
+  import lunasql.lib.Contexte;
+  import lunasql.cmd.Instruction;
+
+  public class CmdEchoPlugin extends Instruction {
+
+     // Constructeur : utilise le contexte courant
+     public CmdEchoPlugin(Contexte cont) {
+        // Appel au super constructeur avec passage du contexte,
+        // du type de commande (plugin : TYPE_CMDPLG), et
+        // et du nom et raccourci de la commande.
+        super(cont, TYPE_CMDPLG, "ECHO", "E");
+     }
+
+     // Exécution.
+     // Retourne RET_CONTINUE, RET_EXIT_SCR ou RET_SHUTDOWN
+     public int execute() {
+        // Obtention de la connexion SQL : cont.getConnex()
+        if (cont.getVerbose() >= Contexte.VERB_BVR)
+           cont.println(getSCommand(1));
+        cont.setVar(Contexte.ENV_CMD_STATE, Contexte.STATE_FALSE);
+        cont.setValeur(null); // ne retourne rien
+        return RET_CONTINUE;
+     }
+
+     // Description de la commande, affichée sur HELP commands
+     public String getDesc() {
+        return "  echo        Affiche un message\n";
+        // ces espaces et le \n final garantissent un bon affichage
+     }
+
+     // Aide complète de la commande, affichée sur HELP <command>
+     public String getHelp() {
+        return "ECHO <msg> : affiche le message <msg>";
+     }
+  }// class
+
+----------------------------------------------------------------

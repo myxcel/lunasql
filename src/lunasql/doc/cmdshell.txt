@@ -1,0 +1,23 @@
+  SHELL ($) : Exécute la commande shell externe en paramètre
+  SHELL cmd prm1 prm2 ...
+    Ouvre un shell et y exécute cmd avec ses paramètres prm1, prm2...
+    Si un argument contient une espace, il faut l'encadrer par "".
+    Ce que le processus écrit sur SDTOUT est retourné, et ce qu'il
+    écrit sur STDERR est affiché en rouge (ce n'est pas forcément une
+    erreur). Si le processus emet un code de sortie non nul, une
+    erreur est levée.
+
+  Exemples :
+    SHELL cat init.sql
+    SHELL rm "fichier inutile.txt"
+    SHELL curl http://remote-resource.io/fichier
+    -- curl écrit 'fichier' sur STDOUT et ses statistiques sur STDERR
+    SHELL test -f dontexist.txt  --> erreur car code de sortie = 1
+
+  SHELL -d f
+    Ouvre le fichier f par Desktop, donc avec l'application par défaut,
+    ou bien si file est une adresse internet (http(s)://) ou un e-mail
+    (mailto:), ouvre la ressource ad hoc.
+
+  Attribue le résultat de la commande à _RET_VALUE, ou son nom en cas
+  d'option -d.

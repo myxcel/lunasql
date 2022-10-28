@@ -1,0 +1,41 @@
+  INFO (&) : Affiche des informations sur le système
+    (propriétés système et mémoire)
+  INFO : liste les propriétés système de la JVM
+
+  INFO prop : affiche la valeur de la propriété système prop
+   prop peut être une liste séparée par une virgule. Choisir parmi :
+    - les propriétés internes suivantes :
+      commands : liste des commandes internes LunaSQL,
+      globals : liste des variales globales (définies par def),
+      locals : liste des variables locales (définies par def -l/-u),
+      options : liste des options de configuration (:* et _*),
+      database : dictionnaire des propriétés de la base de données,
+      tables : liste des tables utilisateur de la base de données,
+      systables : liste des tables système de la base de données,
+      environ : liste des variables d'environnement du système hôte,
+      stack : pile d'exécution des macros/alias,
+      redefined : liste des commandes redéfinies par des macros,
+      nocircctrl : liste des macros exemptes du contrôle ref. circ.,
+      network : liste des interfaces réseaux du système (IP MAC)
+    - les propriétés système de la JVM, comme :
+    os.name, os.version, os.arch, java.version, java.home, user.name,
+    user.home, user.dir, file.encoding, java.class.path
+   Cf. http://docs.oracle.com/javase/8/docs/api/java/lang/System.html
+    ou bien une variable d'environnement
+
+  INFO rech arg : recherche de l'information rech avec arg, parmi :
+    - whatis cmd : retourne le type de la commande cmd, qui peut être
+    local, global, syslocal, sysglobal, plugin, intern, nodef, stack
+    - find str : retourne le contenu des variables (et leur nom s'il
+    y en a plusieurs), dont le contenu contient la chaîne str
+
+  Exemples : 
+     INFO locals     --> toules les macros, alias et variables
+     INFO os.version --> version de l'OS, sans grande surprise
+     INFO user.name,user.home
+     INFO PATH       --> variable d'environnement PATH, sép. système
+     INFO whatis def --> intern
+     INFO find exec  --> reinit               exec "$(_INIT_FILE)";
+
+  Attribue à _RET_VALUE la valeur de la dernière propriété, ou le
+  nombre si pas d'argument fourni.

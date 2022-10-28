@@ -1,0 +1,36 @@
+  WHEN : Teste une expression et positionne le contexte d'exécution
+         des commandes suivantes. Il est inversé par ELSE et terminé
+         par END. Les WHEN/ELSE/END peuvent être imbriqués.
+  WHEN <expr_bool>;
+    command1 param1a param1b ...;
+  ELSE;
+    command2 param2a param2b ...;
+  END;
+  'expr_bool' est évaluée par le moteur SE courant : avec le SE par
+  défaut javascript, elle peut contenir && (et), || (ou), ! (non),
+  parenthèses... et peut être encadrée par [] ou {}.
+
+  Différence avec la commande IF :
+  WHEN est un modificateur d'exécution basée sur le contexte. Un WHEN
+  évalué à faux interdit l'exécution des commandes avant un ELSE ou END.
+  WHEN ne crée par de nouveau lecteur : les var. locales sont dans le
+  même contexte.
+  Au contraire, IF est une commande qui prend un bloc code à exécuter,
+  et qui lance donc un nouveau lecteur (analyseur) pour chaque bloc
+  évalué.
+
+  Notes :
+   - aucune substitution n'est réalisée dans un bloc WHEN non évalué
+   - 'expr_bool' peut contenir des substitutions par $
+   - en bloc WHEN ne pas utiliser les commandes BREAK, RETURN et EXIT
+   - éviter d'ouvrir un WHEN pour le fermer en bloc différent...
+
+  Exemples:
+    if 1 { if 1 { if 1 { print foo } } } -- une seule commande
+    WHEN 1; WHEN 1; WHEN 1; print foo; END; END; END; -- contexte
+    if 1 {def -l a 1}; print $a   -- erreur : a n'est pas défini !
+    WHEN 1; def -l a 1; END; print $a   -- a est défini
+    WHEN 0; print $(indefinie); END     -- pas d'erreur
+    WHEN 0; voilà du texte brut comme un commentaire; END
+
+  WHEN/ELSE/END ne modifient pas _RET_VALUE ni _CMD_STATE.

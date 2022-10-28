@@ -1,0 +1,23 @@
+  COMMENT : Ajoute un commentaire à un objet de la base
+  - Colonne :
+  COMMENT ON COLUMN <table>.<colonne> IS <commentaire>
+  - Index :
+  COMMENT ON INDEX <index> IS <commentaire>
+  - Table :
+  COMMENT ON TABLE <table> IS <commentaire>
+  - Rôle :
+  COMMENT ON ROLE <rolename> IS <commentaire>
+  - Séquence :
+  COMMENT ON SEQUENCE <sequencename> IS <commentaire>
+  - Schema :
+  COMMENT ON SCHEMA <schemaname> IS <commentaire>
+  - Trigger :
+  COMMENT ON TRIGGER <trigger> IS <commentaire>
+  - User :
+  COMMENT ON USER <username> IS <commentaire>
+  - View :
+  COMMENT ON VIEW <viewname> IS <commentaire>
+  - Contrainte :
+  COMMENT ON CONSTRAINT <constaint> IS <commentaire>
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES

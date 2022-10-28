@@ -1,0 +1,6 @@
+  ERROR : Lève une erreur d'exécution
+  ERROR [msg] Lève une erreur avec le message msg
+  Cette erreur peut être gérée par :EXIT_ON_ERR et :ON_ERROR, et peut
+  être attrapée par EVAL -e/-c.
+
+  Attribue 0 à la constante _RET_VALUE.

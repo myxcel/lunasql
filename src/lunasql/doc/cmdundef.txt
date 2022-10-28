@@ -1,0 +1,16 @@
+  UNDEF (-) : Supprime une variable globale de l'environnement
+  UNDEF [opt] <liste_var>   Supprime les var. de la liste liste_var
+  0ptions :
+      -a   Supprime toutes les var. globales non systèmes sans état
+           d'âme ni message de confirmation
+      -d   Aucune erreur si la var. n'est pas déclarée
+      -f=s Recherche les variables dont le nom correspond à
+           l'expression régulière s et les supprime.
+           L'expr. régulière s peut être encadrée par ` et `.
+  La variable doit être interne. Aucun effet sur variables SE.
+  Une variable système (commençant par _) ne peut être supprimée
+
+  Exemple :
+        UNDEF -f ab.* -- Supprime les var. commençant par 'ab'
+
+  Attribue le nombre de var. supprimées à la constante _RET_VALUE.

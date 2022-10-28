@@ -1,0 +1,33 @@
+  SHOW (#) : Affiche le catalog des objets de la base
+  SHOW          Affiche une description des tables de la base
+  SHOW pattern  Affiche les colonnes des tables dont le nom correspond
+   aux expressions régulières pattern en paramètre. L'expr. régulière
+   peut être encadrée par ` et `.
+   Exemple : SHOW tb.* test.* -- tables commençant par 'tb' ou 'test'
+  SHOW [-l|-t|-s|-v|-c|-m] : sans argument, liste les objets :
+        -t : liste les tables utilisateur (défaut)
+        -s : liste les tables système
+        -v : liste les vues
+        -c : liste les catalogs
+        -m : liste les schémas
+   avec l'option suivante :
+        -l : calcul du nombre de lignes
+
+  Attention : éviter de lancer SHOW sans argument sur un SGBD sensible
+  car il prend des ressources sur les tables système, particulièrement
+  avec l'option -l (donc *avec* comptage du nombre de lignes).
+  Sur SGBD sensible, par sécurité il est préférable d'exécuter :
+   > SELECT owner, table_name FROM all_tables; -- toutes tables
+   > SELECT table_name FROM user_tables; -- tables de l'utilisateur
+   > SELECT object_name FROM user_objects WHERE object_type='TABLE';
+
+  Il est aussi possible depuis le SGBD de lister d'autres objets, comme
+  les schémas, les séquences, les utilisateurs...
+  Lancer la commande SHOW -s, et chercher les tables correspondantes.
+  Exemple sur H2:
+     select * from information_schema.users      -- liste utilisateurs
+     select * from information_schema.sequences  -- liste séquences
+  La macro h2-help du module h2doc utilise information_schema
+
+  Attribue le nombre de tables (si aucun arg.) ou de colonnes (si table
+   fournie) à _RET_VALUE

@@ -1,0 +1,74 @@
+  USE (|) : Charge une seule fois une bibliothèque en environnement
+  USE lib1 lib2...
+   Le fichier contient du code LunaSQL et porte l'extension .(l)sql
+   ou .luna : typiquement cette commande sert à charger des alias/macros
+   en env. global (définition par defmacro).
+   Il est aussi possible de charger une lib SE (javascript...), selon le
+   moteur SE en cours.
+   Elle est tout d'abord recherchée parmi les bibliothèques contenues
+   dans l'archive LunaSQL (/lunasql/misc/), puis dans le classpath
+   (/lunasql/jsextras/ dans un autre fichier jar), et enfin, comme la
+   commande EXEC, dans les répertoires de la constante :SCRIPTS_PATH
+   ou en chemins absolus.
+   Si la bib. est interne et sql, on peut omettre l'extension. Voir
+   l'aide PACKAGES pour les bibliothèques disponibles. Si la bib. est
+   externe, c'est la commande EXEC qui la charge finalement, mais dans
+   ce cas, un seul fichier est admis en argument. Voir l'aide de EXEC.
+
+   Modules disponibles à charger : cf help packages
+   Variables disponibles en module (en plus des var. de portée) :
+   - script_name : nom du fichier script ( = avec .sql)
+   - this_scope  : nom de la bibliothèque (comme script_name)
+   Exemples : USE crypt sys math-base
+   Les bib. chargées sont ajoutées à la constante _LOADED_LIBS, qui est
+   facilement interrogeable par la macro interne 'loaded'.
+
+  Optionnellement, USE peut aussi appeler du code Java :
+  Charge des bibliothèques de classes en CLASSPATH, ou invoque une
+   méthode depuis la classe ou l'objet indiqué(e).
+  USE [-j=f.jar] class -i=new|static
+         [-c=tp -r=args]   : avec -i=new, instantiation
+         [-m=methode [-a=args -t=tp]]  : appel de méthode
+   charge depuis f.jar la classe class et invoque la méthode met
+   (peut être 'main') de la classe cl avec le mode new ou static.
+   La méthode prend les arguments args de types tp (sép: ',')
+
+   Exemples complets :
+
+     -- chargement de fichiers LunaSQL
+     USE crypt sys math-base
+     USE /home/teddy/path/to/file.sql
+     -- mettons que le fichier conf.sql renvoie un dict par PUT
+     def cfg $[USE conf.sql]; print $(cfg,key1)
+     -- notez que cet appel ne pourra se faire qu'une fois, car
+     -- au 2ème appel, USE renverra la valeur 0
+
+     -- chargement de code Java
+     -- ici on utilise JEval (jeval.sourceforge.net)
+     USE -j=jeval-0.9.4.jar net.sourceforge.jeval.Evaluator -i=new ^
+         -m=evaluate -a=(6+3)*5 -t=java.lang.String --> 45
+     USE java.lang.Integer -i=static -m=parseInt -a=8104 ^
+         -t=java.lang.String  --> 8104
+     USE java.lang.System -i=static -m=currentTimeMillis
+         --> 1448649882807 (ex.)
+     USE java.io.File -i=new -r=config.cfg -c=java.lang.String ^
+         -m=length --> 825 (ex.)
+
+  Notes :
+      - les bib. internes renvoient 1 si la lib. est chargée avec succès
+      - si un fichier externe porte le nom d'une bib. interne, comme
+        test.sql (bib. test), c'est la bib. interne qui est chargée,
+        sauf si le fichier est appelé par son chemin (path/to/test.sql)
+      - les classes sont appelées par leur nom complet
+        ex: java.lang.Integer, java.lang.System
+      - un autre moyen d'utiliser la réflexion est de passer par le
+        moteur d'évaluation (SE) courant, s'il le permet (ex: JS)
+      ex: new java.io.File('config.cfg').length() -- est à préférer à :
+       USE java.io.File -i=new -r=config.cfg -c=java.lang.String ^
+         -m=length
+
+  Attribue la valeur de RETURN (ou de PUT en dernière commande, ou le
+  résultat de la dernière évaluation) du script LunaSQL à la constante
+  _RET_VALUE, mais lui attribue 0 si la bib. était déjà chargée. En cas
+  de chargement de code Java, attribue à _RET_VALUE la valeur retournée
+  par la fonction appelée (option -m).

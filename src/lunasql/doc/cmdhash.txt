@@ -1,0 +1,22 @@
+  HASH : Calcule l'empreinte cryptographique du message
+  HASH <msg>     Calcule le hash du message msg
+  HASH -p <msg>  Calcule de hash par PBKDF2 SHA-1 (10000 itérations)
+  HASH -f <f>    Calcule le hash du fichier f
+  Options :  -r=<format> : b64|hex|utf (défaut: hex)
+     -a=<algo> : MD2|MD5|SHA-1|SHA-256|SHA-384|SHA-512
+     (défaut: SHA-256). Ignorée avec l'option -p.
+
+  Exemples :
+    HASH "Ceci est un test"    -- retour du hash de la chaîne donnée
+    HASH -p "Ceci est un test" -- idem avec fonction PBKDF2
+    HASH -f fichier.txt     -- hash de fichier et retour de valeur
+    HASH -f config.cfg -r=b64 -a=SHA-512  -- idem mais super hash
+    print $[hash -f fichier.txt]
+  Astuce ! Comment hasher un MDP sans conserver de variable ?
+    def salt %Sel2Mère  -- toujours ajouter un sel pour les MDP
+    print $[HASH $salt:$[input -p "mdp? "]]
+    eval { def -l m $[HASH -l $salt:$[input -p mdp?]]
+           print 1:$m
+           return 0}; print 2:$m  -- m est alors non définie
+
+  Attribue le résultat à la constante _RET_VALUE ou 0 si erreur.

@@ -1,0 +1,43 @@
+  IF : Teste une expression et exécute les arguments
+  IF <expr_bool> <bloc>
+  [ELSEIF <expr_bool> <bloc>]*n
+  [ELSE <bloc>]
+  'expr_bool' est évaluée par le moteur SE courant : avec le SE par
+  défaut javascript, elle peut contenir && (et), || (ou), ! (non),
+  parenthèses... Elle peut être encadrée par "", [] ou {} pour grouper
+  l'expression en un seul argument.
+  'bloc' doit être déclaré par {} ou "" car il doit aussi former un seul
+  argument. Chaque bloc ELSEIF est évalué si les 'expr_bool' précédentes
+  sont fausses. Finalement, le bloc ELSE est évalué si toutes les
+  'expr_bool' sont fausses.
+
+  Exemples :
+     IF 0 {print ko} else "print ok"
+     IF [1 > 0] "print ok" elseif [0 > 1] "print ko"
+     IF [1 > 0] {
+       print ok
+     } else {
+       print ko
+     }
+     def a x; IF '$(a)'=='x' { print "a vaut x" }
+     IF 1 {IF 1 {IF 1 {IF 1 {IF 1 {print ok}}}}}
+     var i=0  -- i est une variable du SE par défaut (js)
+     IF [i++ < 5] { print i=$[i]; print ok }
+     IF "i++ < 5" " print i=^$[i]; print ok "
+     IF $[call 3>4 or FALSE] {print "éval par SGBD ok"}
+     IF 1 {} -- retourne la valeur de l'évaluation 'expr_bool' (= 1)
+     def a 1 -- a est définie, pas b
+     IF {$a == 1} {print "a ok"} elseif {$b == 1} {print "b PAS ok"}
+
+  Notes :
+   - les substitutions $ seront peut-être réalisées *en amont*
+     Voir l'aide substitutes. Selon l'usage de "", (), {}, prendre
+     l'habitude d'encadrer les blocs par {}.
+   - 'expr_bool' peut contenir des variables LunaSQL et peut aussi
+     être encadré par {} pour en différer les substitutions.
+   - en cas de blocs volumineux (ce qui devrait rarement se produire),
+     préférer la commande WHEN
+
+  Ne modifie pas les constantes _RET_VALUE et _CMD_STATE (sauf en cas
+  d'erreur), mais les commandes exécutées peuvent les modifier.
+  Attribue 0 à _RET_VALUE si aucun bloc exécuté.

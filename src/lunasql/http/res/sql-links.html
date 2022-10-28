@@ -1,0 +1,42 @@
+<h3>Commandes SQL</h3>
+<p>
+<a href='#' onclick='txsql.value+="SELECT id FROM myTab WHERE conditions\n"'>SELECT</a> -
+<a href='#' onclick='txsql.value+="UPDATE myTab set id=val WHERE conditions\n"'>UPDATE</a> -
+<a href='#' onclick='txsql.value+="INSERT INTO myTab (id) VALUES ()\n"'>INSERT</a> -
+<a href='#' onclick='txsql.value+="DELETE FROM myTab WHERE conditions\n"'>DELETE</a> -
+<a href='#' onclick='txsql.value+="CREATE TABLE myTab (id INT PRIMARY KEY, name VARCHAR(255))\n"'>CREATE TABLE</a>
+<br>
+<a href='#' onclick='txsql.value+="defmacro name {args} {\n  \n  \n} \"\n  name : (description)\n  usage : name args\n  \"\n"'>defmacro</a> -
+<a href='#' onclick='txsql.value+="def name value\n"'>def</a> -
+<a href='#' onclick='txsql.value+="if cond {\n  \n} elseif cond {\n  \n} else {\n  \n}\n"'>if</a> -
+<a href='#' onclick='txsql.value+="case $var v1 {\n  \n} v2 {\n  \n} else {\n  \n}\n"'>case</a> -
+<a href='#' onclick='txsql.value+="for e {liste} {\n  -- $e\n}\n"'>for</a> -
+<a href='#' onclick='txsql.value+="while {cond} {\n  \n} else {\n  \n}\n"'>while</a> -
+<a href='#' onclick='txsql.value+="eval {\n  \n} -e=err -c{\n  -- $err\n}\n"'>eval</a> -
+<a href='#' onclick='txsql.value+="with [x = 1\n      y = 2] {\n  -- code x, y;\n}"'>with</a>
+</p>
+<h3>Liens externes</h3>
+<p>
+<a href='https://www.h2database.com/html/grammar.html' target='_blank'>H2 database</a> -
+<a href='https://sql.sh/cours' target='_blank'>Cours SQL</a>
+</p>
+<h3>Aide LunaSQL</h3>
+<pre>
+ - Options de lancement                 : help launching
+ - Informations sur l'utilisation       : help syntax
+ - Fonctionnement des chaînes de car.   : help delimiters
+ - Liste complète des commandes         : help commands
+ - Guide d'usage des substitutions      : help substitutes
+ - Guide des expressions substituées    : help expressions
+ - Quelques propriétés des variables    : help variables
+ - Aide sur la commande &lt;c&gt;             : help &lt;c&gt;
+ - Guide de gestion des erreurs         : help catching
+ - Liste complète des fonctions js      : help js-funct
+ - Liste complète des modules           : help packages
+ - À propos des bibliothèques Java      : help libraries
+ - Les bonnes pratiques en LunaSQL      : help etikette
+ - Quelques bonus et exemples           : help bonus
+ - Licence de LunaSQL et bibliothèques  : help licenses
+ - Nouveautés des dernières versions    : help changelog
+ - Aide sur le module de base           : help-base
+</pre>

@@ -1,0 +1,13 @@
+  CASE : Teste en chaîne une exp. reg. et exécute les arguments
+  CASE <val> [<str|regexp> <bloc>]* [ELSE <bloc>]
+  'bloc' doit être déclaré par {} ou "" car il doit former
+  un seul argument. Si la valeur est encadrée par ` et `, le test est
+  réalisé sur expression régulière.
+
+  Exemples :
+     CASE $a 0 {print a=0} 1 {print a=1} else "print autre chose"
+     CASE abc `a.*` {print commence par a} `b|c` {print "b ou c"}
+
+  Ne modifie pas les constantes _RET_VALUE et _CMD_STATE (sauf
+  erreur), mais les commandes exécutées peuvent les modifier.
+  Attribue 0 à _RET_VALUE si aucun bloc exécuté.

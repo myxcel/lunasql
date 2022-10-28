@@ -1,0 +1,23 @@
+  START (@@) : Exécute le fichier script ou les commandes passés en
+   paramètre en tâche de fond (nouveau processus).
+   La syntaxe est celle de la commande EXEC (voir l'aide de EXEC).
+
+   Attention :
+   La bonne gestion de la concurrence n'est pas du tout assurée car
+   le même contexte est alors partagé par tous les processus. De
+   plus la plupart des commandes gèrent leurs arguments depuis le
+   contexte, donc ne supportent pas la parallélisation.
+   L'exécution de commandes en batterie avec START peut donc donner
+   lieu à d'importants et étonnants effets de bords.
+   Commande à utiliser avec précaution et à vos risques et périls !
+
+   Exemple :
+      start - {print 1}; start - {print 2}  --> affiche 2 2
+
+   Ici les arguments de print étant liés à un contexte commun,
+   l'argument "1" est écrasé par "2" !  (oui, c'est un bogue)
+   Il peut être utile de différer le deuxième appel, mais cela peut
+   aussi lever une ConcurrentModificationException.
+
+   Example :
+      start - {print 1}; time wait 1l; start - {print 2} -->  1 2

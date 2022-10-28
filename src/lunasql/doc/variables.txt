@@ -1,0 +1,35 @@
+Les variables en LunaSQL sont des chaînes de caractères référencées
+par un nom de variable. Les macros, alias (définies par DEF ou bien
+defmacro) et les options (définies par OPT) sont toutes des variables.
+
+Les variables peuvent être globales (par défaut) ou locales au lecteur
+(ou bloc, ou scope) de déclaration (DEF -l ou OPT -l).
+
+Un mot sur la portée des variables :
+
+Les variables globales (déclarées par DEF) sont liées au contexte
+global, donc sont accessibles n'importe où, quelque soit leur portée
+d'exécution (Lecteur) ou leur fichier de déclaration.
+Les variables locales (déclarées par DEF -l ou indice de boucle FOR)
+sont liées à leur portée d'exécution (Lecteur) ou leur fichier de
+déclaration. Elles sont donc accessibles dans cette portée et dans tous
+les portées filles. Un bloc de déclaration peut-être :
+  - un fichier (commandes EXEC et USE)
+  - un bloc IF, FOR, WHILE ou EXEC
+  - un bloc itérateur (ex. LIST apply, filter).
+Pour les blocs à itérations, les variables déclarées lors d'un tour
+d'itération sont accessibles aux tours suivants.
+Variables de Lecteur (ou portée) disponibles :
+     macro_name  : Nom de la macro (le cas échéant)
+     script_name : Nom du fichier (le cas échéant)
+     this_scope  : Nom de la portée active (fichier, console, macro)
+     super_scope : Nom de la portée supplémentaire (IF, FOR...)
+     scope_deep  : Profondeur de Lecteurs (1: racine, ex. console)
+
+Exemple :
+  def f {
+    if 1 {
+      print $this_scope   --> f
+      print $super_scope  --> if
+    }
+  }; f

@@ -1,0 +1,64 @@
+  XML : Analyse un objet XML et le parcourt par XPath
+  XML -s|-f=<xml> <xpath>  Lit le code xml et applique XPath
+  XML -q=<sql> [<xpath>]  Exécute le code SQL (SELECT) ou liste la
+    table <sql> et sans <xpath> retourne le XML ou applique XPath.
+
+  Documentation pour les requêtes XPath :
+   https://docs.oracle.com/javase/tutorial/jaxp/xslt/xpath.html
+  Il est recommandé d'encadrer les données par {}. Les requêtes peuvent
+  être encadrées par {} ou par [], ou bien non-encadrées si elles
+  forment un seul argument sans caractère spécial.
+  En cas de requêtes multiples (groupées ou non), les résultats sont
+  retrournés sous forme de liste.
+
+  Options : -s=<xml str>   document XML en chaîne
+            -f=<xml file>  document XML en fichier
+            -q=<sql cmd>   commande SQL SELECT ou nom de table à lister
+            -m  plusieurs requêtes sont groupées en 1 argument
+                (liste(s) de requêtes)
+
+  Avec l'option -q, la requête SQL est exécutée et le XML est généré
+  selon le modèle suivant (exemple listant le contenu d'une table TEST
+  à 4 champs : ID, NOM, AGE, SEX) :
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <recordset>
+      <record rownum="1">
+        <ID>1</ID>
+        <NOM>Zoé</NOM>
+        <AGE>28</AGE>
+        <SEX>F</SEX>
+      </record>
+      ...
+    </recordset>
+  Il est ensuite possible de sauvegarder ce code XML en variable par
+  DEF pour un usage ultérieur avec XML -s, ou bien de l'utiliser en
+  place par une requête XPath, comme :
+    XML -q {SELECT * FROM TEST} [//recordset/record[@rownum="1"]/NOM]
+    --> Zoé
+  Note : pour requêter directement des données d'une base, préférer la
+    commande SEEK (ou CSV).
+
+  Exemples :
+   XML -s={
+      <a><b l="en">hello</b><b l="fr">salut</b></a>
+    } //a/b[@l="fr"]  --> salut
+
+    XML -s={
+      <a><b id="1">the big</b><b id="2">red hat</b></a>
+    } //a/b[@id="2"] //a/b[@id="1"]  --> {red hat} {the big}
+
+    XML -q={SELECT * FROM TEST}  --> XML complet
+    XML -q={SELECT * FROM TEST}  [//recordset/record[@rownum="1"]/NOM]
+
+  Plus tordu, définition de variables par DEF sur multi-requêtes :
+    def r1,r2 ~$[ XML -s={
+      <a><b id="1">the big</b><b id="2">red hat</b></a>
+    } //a/b[@id="2"] //a/b[@id="1"] ]
+    -- r1 <- red hat, r2 <- the big
+    -- notez bien l'utilisation de ~ pour dégrouper le retour de la
+    --  substitution $[] en deux arguments pour r1 et r2
+
+   XML -f=donnees.xml [//a/b[@l="de"]]  -- req. encadrée par []
+   XML -m -f=donnees.xml { //a/b[@l="fr"] //a/b[@l="en"] }  -- ou {}
+
+  Attribue le résultat à la constante _RET_VALUE.

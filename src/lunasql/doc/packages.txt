@@ -1,0 +1,51 @@
+Les modules LunaSQL ou Javascript suivants sont disponibles,
+chargeables via la commande USE (voir l'aide de USE).
+
+  const   : ajoute des constantes utiles
+  crypt   : ajoute les commandes cryptographiques : hash, crypt,
+            dcrypt, sign et verify
+  csv     : ajoute la commande de gestion de tables en CSV : csv
+  doc     : documentation
+   - doc-h2    : documentation sur le SGBD H2
+   - doc-sql   : documentation sur le langage SQL
+  frm     : ajoute la commande de formatage de requête : frm
+  geek    : module inutile pour geeks invertébrés
+  mail    : ajoute la commande d'envoi d'e-mails : mail
+  math    : outils JS de calcul mathématique, contient :
+   - math-base      : (js) trigonométrie et fonctions de base
+   - math-decision  : (js) prise de décision par ID3
+   - math-jstat     : (js) fonctions et tests statistiques
+  obj     : manipulations d'objets et structures de données
+     - obj-base     : macros et fonctions JS de base
+     - obj-sugar    : (js) gestion d'objets js natifs
+     - obj-taffy    : (js) moteur de BDD en objet
+     - obj-underscore : (js) programmation fonctionnelle en js
+  optim   : module de confort pour la plupart des usages
+  play    : ajoute la commande de lecture de son : play
+  report  : ajoute la commande de génération de rapports : report
+  strict  : module de garantie de syntaxe stricte
+  sys     : ajoute des macros et fonctions JS d'accès au système sur le
+            modèle de commandes shell (ls, cp, mv...) et des macros de
+            journalisation (log)
+  test    : ajoute la commande d'assertions : test
+            ainsi que plusieurs macros de contrôle et de comparaison de
+            contenu de variables, et la macro run-tests de lancement
+  time    : utilitaires de gestion de la date et l'heure, contient :
+   - time-base      : ajoute les macros set-chrono, get-chrono
+   - time-xdate     : (js) manipulation de dates
+  xml     : ajoute la commande de requête XPATH : xml
+
+Pour importer d'autres bibliothèques js par la commande USE, placez
+seulement les bibliothèques en archive ou dossier sous l'arborescence
+/lunasql/jsextras/ (par exemple dans lunasql-js.jar), puis ajouter
+bien sûr cette ressource dans le CLASSPATH.
+
+Notes :
+    - les macros définies dans certains de ces paquets sont exemptes
+    du contrôle de référence circulaire. Inutile, par exemple, de les
+    prefixer par '*'
+    - si l'option :SIGN_POLICY est fixée à 1 ou 2, les scripts externes
+    à LunaSQL doivent être signés pour permettre leur exécution (dans
+    tous les cas, le script est considéré comme chargé)
+
+Tapez help-<lib> pour de l'aide sur une bibliothèque

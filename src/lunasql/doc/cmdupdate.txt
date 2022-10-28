@@ -1,0 +1,4 @@
+  UPDATE : Met à jour des données de la base
+  UPDATE table SET column = Expression [, ...] [WHERE Expression]
+
+  Attribue le nombre de lignes insérées à _RET_VALUE et à_RET_NLINES.

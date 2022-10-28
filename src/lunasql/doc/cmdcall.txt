@@ -1,0 +1,5 @@
+  CALL : Appelle une procédure ou évalue une expression SQL
+       L'expression est dépendante du SGBD
+  CALL expression|procédure
+
+  Modifie les constantes _RET_VALUE et _RET_NLINES comme SELECT.

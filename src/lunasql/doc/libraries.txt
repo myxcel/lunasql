@@ -1,0 +1,40 @@
+Bibliothèques embarquées en jar LunaSQL :
+   - jline       : émulation d'une console interactive
+     https://jline.github.io/
+   - joptsimple  : analyse des options de ligne de commande
+     https://github.com/jopt-simple/jopt-simple
+   - opencsv     : lecture/écriture de données au format CSV
+     http://opencsv.sourceforge.net/project-info.html
+   - jtableview   : affichage de données en JTable amélioré
+     http://sourceforge.net/projects/tableview/
+     https://launchpad.net/~stephane-brunner/+archive/ppa
+   - nanohttpd   : mini serveur HTTP embarqué
+     https://github.com/NanoHttpd/nanohttpd
+   - str4d       : pure Java implementation of EdDSA
+     https://github.com/str4d/ed25519-java
+
+Bibliothèques Javascript en jar LunaSQL :
+   - taffy      : fonctions de base de données en JS
+     https://github.com/typicaljoe/taffydb
+   - xdate      : fonctions de manipulation de dates
+     http://arshaw.com/xdate/
+   - sugarjs    : fonctions de manipulation des objets JS
+     https://sugarjs.com/
+   - underscore : fonctions de manipulation de tableaux
+     http://underscorejs.org
+   - decision   : fonctions de prise de décision
+     https://github.com/serendipious/nodejs-decision-tree-id3
+   - jstat      : fonctions de calcul statistique
+     https://github.com/jstat/jstat/
+
+Bibliothèques optionnelles (jar à ajouter au CLASSPATH) :
+   - jansi : console agrémentée de couleurs
+     https://github.com/fusesource/jansi
+   - javamail    : commande mail (use mail) pour envoi de mails
+     https://javaee.github.io/javamail/
+   - jsqlparser  : commande frm (use frm) pour formatage SQL
+     https://github.com/JSQLParser/JSqlParser
+   - csvjdbc  : commande csv (use csv) pour lecture CSV par SQL
+     http://csvjdbc.sourceforge.net/
+   - jsyntaxpane : commande edit : édition de code en swing
+     https://github.com/nordfalk/jsyntaxpane

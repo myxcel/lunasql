@@ -1,0 +1,9 @@
+  SIZE (*) : Affiche la taille de la (ou les) table(s) en paramêtre
+  SIZE nom_table1 | nom_vue1 | pattern1 ...
+  SIZE pattern  Affiche la taille des tables dont le nom correspond
+       à l'expression régulière pattern.
+       L'expr. régulière s peut être encadrée par ` et `.
+       Ex. SIZE tb.* -- tables commençant par 'tb'
+
+  Attribue le nombre de lignes de la dernière table à _RET_NLINES
+  et le nombre total à _RET_VALUE.

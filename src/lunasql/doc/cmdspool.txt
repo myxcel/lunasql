@@ -1,0 +1,17 @@
+  SPOOL (!) : Redirige les sorties OUT ou ERR vers le fichier indiqué
+  SPOOL       Affiche l'état spool actuel et le retourne
+     Avec option -s, pas d'affichage, état seulement retourné.
+  SPOOL <fich1> [-e=<fich2>]  Ouvre la redirection vers le fichier
+     fich1 et optionnellement les erreurs vers le fichier fich2
+     Avec option -w, l'écriture écrase le fichier s'il existe
+       (mode 'w'), sinon, le fichier est complété (mode 'a').
+  Commandes de gestion :
+    -s | SUSPEND   : suspend la redirection (ne ferme pas le fichier)
+    -r | RESUME    : reprend la redirection vers le même fichier
+    -c | OFF       : ferme le fichier et repasse en console
+  Commandes d'information :
+    -f | FILE      : retourne le nom du fichier de redirection
+    -u | ERRFILE   : retourne le nom du fichier de redirection d'erreur
+
+  Sans argument ou avec une commande d'information, attribue l'état ou
+  le nom de fichier à la constante _RET_VALUE.

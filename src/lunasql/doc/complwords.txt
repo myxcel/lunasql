@@ -1,0 +1,31 @@
+# Complètement de mots pour l'éditeur FrmEditScript et HttpConsole
+# Modèle de déclaration : mot-clef:texte ajouté au mot-clef
+
+# SQL
+CREATE:TABLE myTab (id INT PRIMARY KEY, name VARCHAR(255) DEFAULT NULL)
+create:table myTab (id int primary key, name varchar(255) DEFAULT NULL)
+SELECT:col1 FROM tab1 WHERE conditions
+select:col1 from tab1 where conditions
+INSERT:INTO tab1 VALUES (1, 'val1')
+insert:into tab1 values (1, 'val1')
+UPDATE:tab1 SET id=1, name='val1' WHERE id=0
+update:tab1 set id=1, name='val1' where id=0
+DELETE:FROM tab1 WHERE id=0
+delete:from tab1 where id=0
+
+# LunaSQL
+if:[cond] {\n  -- code\n} elseif [cond] {\n  -- code\n} else {\n  -- code\n}
+when:[cond]\n  -- code\nelse\n  -- code\nend
+case:$s v1 {\n  -- code\n} v2 {\n  -- code\n} else {\n  -- code\n}
+for:e {liste} {\n  -- code $e\n}
+while:[cond] {\n  -- code\n} else {\n  -- code\n}
+eval:{\n  -- code\n} -e=err -c {\n  -- $err_cmd, $err_msg, $err_lng\n}
+def:name val
+defm:name {args} {\n  -- code $args;\n  \n} "\n  description\n  exemple\n  "
+defmacro:name {args} {\n  -- code $args;\n  \n} "\n  description\n  exemple\n  "
+defr:name {id:nat desc}
+defrecord:name {id:nat desc}
+with:[x = 1\n      y = 2] {\n  -- code x, y;\n}
+
+# Autres
+Lorem:ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

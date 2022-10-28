@@ -1,0 +1,19 @@
+  DROP : Supprime un objet de la base
+  - Index :
+  DROP INDEX <index> [IF EXISTS]
+  - Rôle :
+  DROP ROLE <rolename>
+  - Séquence :
+  DROP SEQUENCE <sequencename> [IF EXISTS] [RESTRICT | CASCADE]
+  - Schéma :
+  DROP SCHEMA <schemaname> [RESTRICT | CASCADE]
+  - Table :
+  DROP TABLE <table> [IF EXISTS] [RESTRICT | CASCADE]
+  - Trigger :
+  DROP TRIGGER <trigger>
+  - User :
+  DROP USER <username>
+  - View :
+  DROP VIEW <viewname> [IF EXISTS] [RESTRICT | CASCADE]
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES

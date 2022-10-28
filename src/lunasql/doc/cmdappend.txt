@@ -1,0 +1,20 @@
+  APPEND : Affecte la valeur de retour *en mode ajout* sans sortir
+  APPEND [valeur]
+  Comme de la commande PUT, les arguments sont placés en valeur
+  de retour sans que l'exécution soit interrompue, mais l'ancienne
+  valeur est conservée, et la nouvelle est concaténée. Le résultat
+  est retourné pour la commande englobante $[] et placé en constante
+  _RET_VALUE, mais n'est pas affiché.
+
+  Note : il n'est pas possible d'utiliser des substitutions de
+    commandes dans la mesure où elles fonctionnent sur le principe de
+    la commande PUT (donc elles écrasent la valeur précédente);
+
+  Exemples :
+    str len hello  -- puis:
+    APPEND hello -- la valeur de retour est '5hello'
+    APPEND $[str len hello] -- la valeur est '55' (retour de $ doublé)
+    put          -- maintenant la valeur est vide
+
+  Attribue à _RET_VALUE la valeur chaîne en paramètre, éventuellement
+  concaténé à la précédente valeur, sinon rien si aucun paramètre.

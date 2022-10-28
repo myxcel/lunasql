@@ -1,0 +1,76 @@
+  EDIT : Ouvre un éditeur de script Java Swing
+  EDIT <file>  édite le fichier par l'éditeur Swing interne.
+       Si JSyntaxPane est dans le CLASSPATH, il est utilisé avec
+       comme type l'extension du fichier (ou l'option -t).
+  EDIT -d <file> : ouvre avec l'éditeur par défaut du système
+   (si le type de fichier est associé à une action)
+  EDIT -p <file> : ouvre avec l'éditeur configuré en :EDITOR_PATH
+
+  L'éditeur par défaut (sans option -d ni -p) est un éditeur Swing très
+  simple mais bien adapté aux scripts et macros LunaSQL.
+  Il se compose de trois compartiments : dans le volet de gauche, la
+  liste des tables de la base de données, et la liste des variables
+  LunaSQL, et le panneau central qui contient l'éditeur proprement dit.
+  Si la bibliothèque JSyntaxPane est dans la CLASSPATH, l'éditeur se
+  bonifie de la coloration synaxique, des numéros de lignes, d'un
+  menu contextuel complet pour le développement et de fonctions de
+  recherche avancées.
+  Notes : - la version courante de JSyntaxPane (1.1.5) fonctionne sur
+            Java 8 mais mal sur Java 11,
+          - en mode HTTP, cette commande n'est pas autorisée.
+
+  La liste des tables permet des opérations sur les tables de la base
+  (par clic-droit sur un nom de table) :
+    - insérer le nom à la position du curseur
+    - interrogation du nombre de lignes de la table (attention !)
+    - interrogation de la structure de la table (colonnes)
+    - interrogation des relations filles de "foreign key"
+    - prévisualisation du contenu de la table
+    - actualiser la liste des tables
+    Sous-menu SQL :
+    - insertion à la position du curseur d'une requête SELECT, INSERT,
+      UPDATE, DELETE, CEATE, DROP
+    Sous-menu Données :
+    - vider la table (commande TRUNCATE) (attention !)
+    - importer les données de la table (commande IMPORT)
+    - exporter les données de la table (commande EXPORT)
+
+  La liste des variables permet des opérations sur les variables/macros
+  de l'environnement global de LunaSQL (par clic-droit sur un nom) :
+    - insérer au curseur le nom de la variable, ex: x
+    - insérer au curseur la référence de la variable, ex: $(x)
+    - insérer au curseur la valeur de la variable, ex: 42
+    - inspecter la variable, c'est-à-dire afficher son contenu
+    - voir la documentation de la variable (commande HELP)
+    - ajouter une variable
+    - modifier une variable
+    - dupliquer une variable
+    - supprimer une variable
+    - actualiser la liste des variables
+  Cocher la case "Var. système" ajoute à la liste aussi les variables
+  système (commençant par '_' ou ':').
+
+  Le menu permet en outre des actions supplémentaires :
+    - Fichier : opérations sur le contenu de l'éditeur (ouvrir un
+      fichier, sauver, quitter l'éditeur)
+    - Édition : opérations d'édition classiques (annuler, rétablir,
+      copier, couper, coller, tout sélectionner)
+    - Script : changer de syntaxe de coloration, changer de moteur
+      d'exécution, exécuter l'intégralité du contenu de l'éditeur,
+      signer et vérifier la signature d'un script
+    - Code : opérations sur le code (compléter le mot sélectionné,
+      évaluer l'expression sélectionnée, inspecter la variable
+      sélectionnée, voir la documentation de la var. sélectionnée,
+      ouvrir le navigateur pour la doc. SQL)
+      Le complètement de mots fonctionne sur un mot-clef sélectionné
+      parmi les mots suivants : create, insert, select, update, delete,
+      if, when, case, for, while, eval, def, defm, defmacro, defr,
+      defrecord, with, Lorem. L'évaluation insère au curseur la valeur
+      retournée par l'expression sélectionnée.
+      Ex: "rand -m=uuid", "formatDate()", "select count(*) from test"
+    - Greffons : liste des greffons (ce sont des scripts LunaSQL ou SE
+      pris en charge, selon bibliothèque SE en CLASSPATH, et présents
+      dans le premier répertoire de la variable :SCRIPTS_PATH, ou si
+      vide, dans le répertoire courant).
+
+  Ne modifie pas la constante _RET_VALUE.

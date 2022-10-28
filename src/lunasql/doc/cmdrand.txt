@@ -1,0 +1,32 @@
+  RAND : Génère un nombre ou une chaîne aléatoire selon bornes.
+         Modes : number (ou nbr), string (ou str), secure (ou sec)
+         ou mode UUID. Par défaut : string
+  RAND -m=nbr|number [-i=borne_inf] [-s=borne_sup (exclue)]
+    défaut : -i=0, -s=1000
+  RAND -m=str|string [-t=taille] [-c=charset]
+    défaut : -t=16, -c=a. charset : A:A-Z, a:a-z, 0:0-9, %:spécial
+  RAND -m=sec|secure [-t=taille] [-r=base]
+    défaut : -t=16, -r=16 (de 2 à 36)
+  RAND -m=UUID
+
+  Exemples :
+   RAND : Génère et retourne un nombre entre 0 et un milliard (exclu)
+     équivalent à:  RAND -m=nbr -s=1000000000
+   RAND -m=nbr -s=50        Idem mais nombre entre 0 et 50
+   RAND -m=nbr -i=10 -s=50  Idem mais nombre entre 10 et 50
+   RAND -m=str : Génère et retourne une chaîne de 16 car. minusc.
+   RAND -m=str -t=12        Idem mais chaîne fait 12 car. minusc.
+   RAND -m=str -t=12 -c=Aa0 Idem mais chaîne est maj/min/chiffre
+   RAND -m=sec -t=20 -r=32  Génère un nombre aléatoire sécurisé de 20
+     octets et retourne le résultat en base 32.
+     Option : -d=seed : semence (long), ex. -d=$[time now]
+   RAND -m=UUID             Génère et retourne un UUID
+   -- Génération de 10 nombres aléatoires :
+   i=0; while i++<10 { print $[RAND -m=nbr -i0 -s1000000] }
+
+  Note : les générations sécurisées (modes sec et UUID) consomment
+   l'entropie du système ; il peut arriver que la commande RAND
+   (classe SecureRandom) attende que l'entropie soit suffisante
+   avant de retourner une valeur.
+
+  Attribue l'aléa généré à la constante _RET_VALUE.

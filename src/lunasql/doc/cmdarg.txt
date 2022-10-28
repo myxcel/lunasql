@@ -1,0 +1,78 @@
+  ARG : Affecte les arguments passés en variables locales
+  Doit être appelé au sein d'un bloc lecteur à arguments de ligne
+  de commande positionnés : typiquement, ARG est positionnée en
+  début de macro (pour capter les arguments passés à la macro), ou
+  en début de fichier de script (pour ceux passés au fichier).
+  ARG var1:type var2:type [var3:type defaut] *var4:type / cond.
+  Types : exp. rég. encadrée par ` et `, ou commandes suivantes :
+     int (entier), nat (naturel), num (numérique), char,
+     bool (0,1,t(rue),f(alse)), yesno (y[es],n[o[n]],o[ui]),
+     id (nom de var.), opt (nom d'option), idopt (les deux),
+     word (lettre, chiffre, _), date (JJ/MM/AAAA),
+     datetime (JJ/MM/AAAA HH:MI:SS), dateus (MM/JJ/AAAA),
+     datets (AAAA-MM-JJ), alpha, alphanum, alphauc (maj.),
+     alphalc (min.), email, str (tout, défaut).
+
+  Les arguments obligatoires sont déclarés par leur nom seul, les
+  optionnels encadrés par [], et le groupage précédé de *. La valeur
+  par défaut peut contenir des substitutions par '$', mais elles
+  doivent alors être échappées.
+  Les noms de paramètres (var. locales) peuvent commencer par '.'
+  Tout ce qui suit un '/' placé seul en arg. est considéré comme
+  une expression booléenne de validation des arguments.
+
+  En cas de mauvais usage de la macro par rapport à la définition
+  donnée à ARG, une erreur est levée, sécurisant l'exécution.
+  ARG peut ainsi avantageusement remplacer des def -l et des if :
+    ARG a b [c 0] *d  -- est l'équivalent de :
+    def -l a,b,c,d $arg1 $arg2 $(*arg3?0) $(args_ls@3:)
+    if $(a#empty?) {error "argument a vide"} -- etc etc
+  
+  Exemples :
+    def f {ARG .a .b; print $(.a) $(.b)}; f do fa
+    def f {ARG a b [c mi]; print $a $b $c}; f do ré --> do ré mi
+    def f {ARG a *b; print $a $b}; f do "ré mi" --> do {ré mi}
+    def f {ARG a [b]; print $a $b}; f do --> do
+    def f {ARG a:num [b:int 0]; print $a $b}; f 1.8 2 --> 1.8 2
+    def f {ARG a:`\w+`; print $a}; f a123 --> a123
+    def f {ARG [a:int ^$`?a`] [b ^$(uneVar)] [c ^$[call 6*7]]}
+    f  --> a est demandé, b prend $(uneVar), c est calculé par CALL
+    -- donc avec defmacro :
+    defm f {[a:int ^$`?a`] [b $(uneVar)] [c ^$[call 6*7]]} {
+      -- code utilisant les paramètres a, b et c
+    }
+    -- arguments chaînés : b prend par défaut la valeur de a, c de b
+    def f {ARG [a 1] [b ^$a] [c ^$b]; print $a $b $c}
+    f 2     --> 2 2 2
+    f 2 3   --> 2 3 3
+    f 2 3 4 --> 2 3 4
+    -- validation de arguments : ici b doit être supérieur à a
+    def f {ARG a:int [b:int 2] / {$b > $a}; print $a $b}
+
+  Les arguments optionnels [x] ou englobants *x ne peuvent être
+  placés qu'en fin de liste. Ces appels lèvent une erreur :
+    def f {arg a [b] c}; f 1 2   -- 2 est pris par b
+    def g {arg a *b c};  g 1 2 3 -- 2 et 3 sont pris par b
+
+  Pour implanter des arguments nommés, utiliser un dict. Exemple :
+    defm f  [opts] {  -- opts est un dict ou une chaîne vide
+      with $opts {    -- with évite les appels $(opts,key)
+        def -u2 a $[list nvl [{$(*a)} {valA}]]  -- valA par défaut
+        def -u2 b $[list nvl [{$(*b)} {valB}]]  -- valB par défaut
+        -- notez bien "-u2" car le bloc with entre en 2 lecteurs
+      }
+      -- Utilisation de nos arguments nommés a et b
+      print "a=$a et b=$b"
+    }
+    f                 --> a=valA et b=valB
+    f { a=1// c=3 }   --> a=1 et b=valB
+    f { a=1// b=2 }   --> a=1 et b=2
+
+  Notes :
+   - pour déclarer une macro (avec ou sans arguments/aide), il est
+     préférable d'utiliser defmacro (qui utilise ARG) plutôt que def
+   - bien sûr, l'utilisation de ARG, bien que pratique, est un peu
+     plus gourmande que l'équivalent par $arg1, $arg2..., surtout en
+     cas d'usage de la validation.
+
+  Ne modifie pas la constante _RET_VALUE.

@@ -1,0 +1,41 @@
+  NET : Ouvre et envoie une requête HTTP GET, POST, PUT, DELETE
+  Permet d'envoyer des données à un serveur sous forme de requêtes
+  HTTP GET, POST, PUT et DELETE, avec la possibilité d'ajouter des
+  entêtes. Actuellement, seules les sous-commandes GET et POST sont
+  supportées.
+
+  NET get <URL> [-h=<dict>] [-o=<fichier>]
+    <URL> est une adresse sur un serveur HTTP valide (http(s)://)
+    Avec l'option -h, un dictionnaire <dict> de clefs key=value
+    définit les entêtes HTTP à envoyer au serveur (le dictionnaire
+    peut être encadré par "" ou {}). Voir la documentation sur
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+    Avec l'option -o, un nom de fichier de sortie <fichier> est
+    accepté pour sauvegarder les données en fichier et non les
+    retourner en console (utile pour les fichiers binaires).
+  Exemples:
+    NET get http://server.net/resource.html
+    NET get https://server.net/binary.zip -o=archiv.zip
+    NET get https://server.net/login.php -h={
+        User-Agent: Mozilla/5.0
+        Content-Type: application/xml
+        Authorization: Basic bG9naW46cGFzc3dvcmQ=
+    }
+    -- API HTTP de LunaSQL, si serveur lancé sur localhost:5862
+    -- passage de requête en paramètre d'URL avec codage d'URL
+    NET get http://localhost:5862/api?sqlquery=select%20*%20from%20test
+
+  NET post <URL> [-h=<dict>] [-o=<fichier>] <body>
+    L'usage de <URL>, -h et -o est le même que la commande GET.
+    <body> représente le corps de la requête, les données à envoyer
+    au serveur. C'est soit une simple chaîne (encadré par "" ou {})
+    soit avec l'option -i le nom d'un fichier contenant les données.
+  Exemples:
+    NET post http://server.net/reader.php "login=mike&password=1234"
+    NET post http://server.net/reader.php -i=bodyToSend.dat
+    -- API HTTP de LunaSQL, si serveur lancé sur localhost:5862
+    -- passage de requête en corps POST text/plain avec codage d'URL
+    NET post http://localhost:5862/api sqlquery=select%20*%20from%20test
+
+  Attribue à la constante _RET_VALUE les données renvoyées par le
+  serveur, ou bien la taille du fichier écrit avec l'option -o.

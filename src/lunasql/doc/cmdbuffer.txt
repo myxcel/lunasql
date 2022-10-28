@@ -1,0 +1,24 @@
+  BUFFER (+) : Gère une var. tampon pour des commandes à portée de
+           main (ajout, suppression, lecture/écriture en fichier).
+  BUFFER option|commande
+    Avec option(s) parmi (exécution dans cet ordre si multiples) :
+    -c | CLEAR   : efface le contenu du tampon
+    -l | LIST    : liste le contenu du tampon
+    -e | RUNALL  : exécute le contenu du tampon
+    -p | POP     : supprime et retourne la dernière entrée du tampon
+    -r | RUNLAST : exécute la dernière entrée du tampon
+    -i | RUNITH  : exécute la i-ème entrée du tampon
+    -n | SIZE    : retourne le nombre d'entrées du tampon
+    -u | RUNPOP  : exécute et supprime la dernière entrée
+    -a | ADD <c> : ajoute la commande c au tampon. Pour plusieurs
+                   commandes, les séparer par ';;'
+    -h | ADDLAST : ajoute la dernière commande au tampon
+    -g | LMODE   : ajoute du contenu au tampon en mode ligne
+    -o | LOAD    : charge le contenu en paramètre en tampon
+    -d | DUMP    : retourne simplement le contenu
+  Note : en cas de dépassement d'index (ex. tampon vide), aucune
+         erreur n'est levée.
+
+  Les options suivantes modifient comme suit _RET_VALUE :
+    -ln (nb d'entrées), -eris (selon retour cmd), -p (dern. entrée),
+    -n (selon retour cmd). Les autres lui attribuent 0.

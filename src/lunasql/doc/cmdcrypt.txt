@@ -1,0 +1,40 @@
+  CRYPT : Chiffre le message donné
+  CRYPT -k=<c> -i=<i> <msg> Chiffre le message msg par clef c
+  CRYPT -p=<p> -i=<i> <msg> Chiffre le message msg par mot de passe p
+  CRYPT -f=<f> -k/-p        Chiffre le fichier f par clef k ou mdp p
+
+  La clef doit être binaire (typiquement par commande HASH), ou bien
+  founie par -p (dérivation de mot de passe en clef de 128 bits). Avec
+  -k, seuls les 128 ou 256 premiers bits (forts) sont retenus pour la
+  clef (la clef peut faire 128 ou 256 bits).
+  Le vecteur d'initialisation (VI) doit être de 128 bits (typiquement
+  par commande rand -m=sec -t=16).
+  Attention: par sécurité, le VI doit être UNIQUE pour chaque clef !
+  Le message est d'abord compressé par GZip puis chiffré par l'algo
+  AES 128/256 (selon la clef fournie) en mode CBC/PKCS5Padding.
+  Avec l'option -f, l'option -i n'est pas prise en compte car le VI est
+  généré et directement attaché au fichier.
+
+  Options : -r=<format_clef> -- b64|hex|utf (défaut: hex)
+        -u=<format_VI>  -- b64|hex|utf (défaut: hex)
+        -t=<format_msg> -- b64|hex|utf (défaut: hex)
+        -a=<algo_cry>   -- AES|Blowfish|DES|DESede (défaut: AES)
+        -s=<nbcar>      -- nb de caractères par lignes en sortie
+
+  Exemples :
+    def iv $[rand -m=sec -t=16]  -- génération du VI
+    CRYPT -k=$[hash clef] -i=$iv "message secret"  --> msg chiffré
+    CRYPT -p=password -i=$iv "message secret"      --> msg chiffré
+    print $[CRYPT -k=$[hash $[input -p mdp?]] -i=$iv $message]
+    CRYPT -r=b64 -s=32 -a=AES -k=4QrcOUm6Wau+VuBX8g+IPg== -i=$iv ^
+      "un message secret à chiffrer"
+    CRYPT -k=4Qrc... -r=b64 -f=data.txt   --> taille de f
+    def key $[rand -m=sec -t=32]          -- AES 256
+    CRYPT -k=$key -f=data.txt             -- DONE!
+    CRYPT -p=password -f=data.txt         -- AES 128
+
+  Attention ! Bien que cette commande utilise un algorithme puissant,
+  pour les échanges de données sensibles il est préférable de choisir
+  un protocole dédié au chiffrement tel que NaCl/libsodium ou OpenPGP.
+
+  Attribue le résultat à la constante _RET_VALUE ou 0 si erreur.

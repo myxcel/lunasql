@@ -1,0 +1,55 @@
+  SIGN : Signe numériquement le message/fichier donné par EdDSA
+  SIGN -g Génère une nouvelle paire de clefs et chiffre la clef privée.
+  SIGN -p Modifie le mot de passe de protection de la clef privée.
+  SIGN <msg>        Signe le message texte <msg> par la clef.
+  SIGN -f <f> [-d]  Signe le fichier <f> par la clef. Avec l'option -d
+          le fichier peut être de tout type et la signature est sauvée
+          dans un fichier <f>.sig, sinon, le fichier doit être un
+          fichier *texte* car la signature est ajoutée au fichier.
+
+  La paire de clef est générée dans la session en cours (en option
+  :SIGN_KEY). Il en va de même en cas de changement de mot de passe.
+  Veillez donc à SAUVEGARDER les modifications en fichier de config !
+
+  L'algorithme de la paire de clefs est Ed25519 (cryptographie
+  asymétique à courbes elliptiques à clefs publique et privée de 256
+  bits). Cf. https://fr.wikipedia.org/wiki/Curve25519
+  La clef privée est chiffrée par AES-128 (dérivation de clef PKCS #12)
+  en mode ECB/NoPadding et la paire de clefs est ensuite sauvée en
+  option :SIGN_KEY. Si une paire de clefs est déjà présente, la
+  génération de la nouvelle clef échoue.
+
+  Il est recommandé d'utiliser l'option -d (signature détachée) pour
+  les fichiers binaires, compressés, chiffrés ou les fichiers texte
+  volumineux (> 2 Mio). Les signatures internes sont typiquement
+  utilisées pour les fichiers script LunaSQL et SE (Javascript), mais
+  également les fichiers de contrôle d'intégrité (SHA1SUM/SHA256SUM).
+  Note : les signatures comprennent des fins de lignes LF (Unix). Dans
+    les signatures internes, modifier les fins de lignes d'un fichier
+    (Windows ou Mac) signé invaliderait la signature.
+
+  La signature est composée par la concaténation des éléments suivants,
+  le tout codé en base64 :
+  - clef publique : la clef publique pour vérification (32 octets),
+  - horodatage : date/heure au format Epoch en ms (6 octets) ; il est
+      inclus dans le message signé sous forme hexadécimale,
+  - signature : la signature EdDSA (64 octets)
+  Le cartouche du signature ajouté à la fin d'un fichier *texte* dans
+  le cas d'une signature interne est de la forme :
+   /* $$ BEGIN SIGNATURE $$
+   DJk6bXiYW92tz1vhCMG+iAuVGQKs3KntVsLRfyWgh8IBdTLwfQ28EZuvnM0lJKgA27kd
+   bLHXUCxnllHXuFAwbdwvV9z30sZ4zaf4uzn5uvBn/z4aWHSKblMPg5xPgupY5IC9gY8G
+    * $$ END SIGNATURE $$ */
+  Dans le cas d'une signature détachée, les données de signature ne
+  sont pas encadrées (format simple base64 avec commentaire '#').
+  La vérification de la signature d'un script excécutable (SQL ou SE)
+  n'ajoute que quelques millisecondes à son exécution.
+
+  Exemples :
+    SIGN -g  --> clef créée dans la session (à sauvegarder !)
+    def s $[SIGN "message important"]
+    SIGN -f script.sql     --> signature incluse en script.sql
+    SIGN -f script.sql -d  --> signature en script.sql.sig
+
+  Attribue la signature en base64 à la constante _RET_VALUE en cas de
+  signature, et la clef publique en cas de génération.

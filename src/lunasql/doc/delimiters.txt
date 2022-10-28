@@ -1,0 +1,74 @@
+Délimitation de chaînes et blocs de code. Plusieurs façons de faire :
+
+- Chaînes dures
+Les chaînes encadrées par { et } ou $$ et $$ sont dites "dures",
+c'est-à-dire que rien n'est échappé ni substitué, mais les {} en début
+et fin de chaîne sont supprimés. Les délimiteurs $$ sont conservés
+(compatibilité avec délimiteurs H2), mais les {} encadrants sont
+supprimés de la chaîne.
+{} sont recommandés pour DEF, IF, FOR, WHILE et CASE car elles peuvent
+être imbriquées et différent les substitutions : pour délimiter tout
+bloc de code, utiliser {}, qui interdisent également les substitutions.
+Les $$...$$ ne peuvent pas être imbriqués, et $$$$ est invalide
+(il faut insérer au moins un caractère (ex $$ $$) ou bien placer
+le triplet $$$ ($$a$$$b$$ -> $$a$$ $$b$$), ou bien encadrer {$$$$}.
+ ex. if [ 2>1 ] { print ok; print $(x) } -- $(x) est différé
+
+- Chaînes douces
+Les chaînes douces (ou normales) sont encadrées par "", '', [] ou ``.
+Elles sont substituées mais échappent les caractères hors $ : "";...
+Pour délimiter un bloc de code (bien que de loin préférable par {}),
+parmi les chaînes douces, seuls "" sont autorisés.
+ ex. if [ 2>1 ] "print ok; print ^$(x)" -- protéger $(x)
+Il peut donc être nécessaire d'échapper les $, mais pas les ;
+En chaîne normale, un ^ en fin de ligne échappe le saut de ligne.
+Le ^ peut aussi servir en blocs [] ou {}.
+ ex. if $[str len ^^]] {print "^}"}
+     -- notez en $[] les ^^ et en {} l'encadrement par "" + ^
+Plus d'info : cf help "substitutes"
+
+- Parenthèses ( et )
+Un argument encadré par ( et ) sera nettoyé des commentaires,
+coupé par les points-virgules et substitué avant exécution. Les ()
+peuvent être imbriquées. Il n'est pas du tout protégé : les éléments
+du bloc sont simplement des arguments de la commande principale.
+Ne sont pas autorisées pour délimiter un bloc de code, une liste ou
+un dictionnaire.
+ ex. print ( foo^; bar ^$(x) ) -- protéger $(x) et ;
+     print (;) -- invalide : échapper le ; !
+     if 1 ( print ko! ) -- ne fonctionne pas !
+
+Rapport entre chaînes, délimiteurs et interprétation :
+  def c sub                     -- chaîne?  délim? interp?
+  print "a /* comm */ b $(c)"   --  oui      non     oui
+  print 'a /* comm */ b $(c)'   --  oui      oui     oui
+  print (a /* comm */ b $(c))   --  non      -       oui
+  print [a /* comm */ b $(c)]   --  oui      oui     oui
+  print {a /* comm */ b $(c)}   --  oui      non     non
+  print <a /* comm */ b $(c)>   --  non      -       oui
+  print `a /* comm */ b $(c)`   --  oui      oui     oui
+  print $$a /* comm */ b $(c)$$ --  oui      oui     non
+L'interprétation comprend les substitutions et échappements
+(ex. les ^ de caractères ou fin de lignes).
+
+Groupage des arguments en fonction des délimiteurs :
+  def nbargs { print $(arg_nb) } -- nombre d'arguments
+  nbargs a"b""c"d     --> 4
+  nbargs a$$b$$ $$c$$d  --> 4
+  nbargs a$$b$$$c$$d  --> 4 (notez les $$$ pour $$ $$)
+  -- en effet "" et $$ $$ séparent les arguments
+  nbargs a(b)(c)d     --> 1
+  nbargs a[b][c]d     --> 1
+  nbargs a{b}{c}d     --> 4 car {} séparent les arguments
+  nbargs a'b''c'd     --> 1
+  nbargs a`b``c`d     --> 1
+
+La séparation d'arguments par {} et "" permet en fait les structures
+suivantes :
+  print a"b"{c}d  --> a b c d
+  print"ok"
+  defmacro f"a b c"{print $a $b $c}" Aide de f..."
+  defmacro f{a b c}{print $a $b $c}{ Aide de f...}
+
+Les chaînes douces et dures délimitent donc les arguments. Pour le
+groupage des arguments substitués, cf. l'aide "substitutes".

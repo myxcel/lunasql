@@ -1,0 +1,7 @@
+  SET : Fixe un paramêtre de la base SQL
+  SET x=valeur  -- peut varier selon le SGBD
+         Exemples : SET variable = expression
+                    SET AUTO COMMIT ( ON | OFF )
+                    SET SCHEMA schema_name
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.

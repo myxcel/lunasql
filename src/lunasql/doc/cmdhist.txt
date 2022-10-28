@@ -1,0 +1,41 @@
+  HIST (HI) : Affiche l'historique de la console
+  HIST          Affiche la totalité de l'historique (200 lignes)
+  HIST s  Recherche et affiche les entrées correspondant à
+          l'expression régulière s
+          Exemple : hist insert.* -- entrées commençant par 'insert'
+  Options :
+    -c | CLEAR     Supprime l'historique de la console courante
+    -n | NTH <n>   Affiche l'entrée n de l'historique.
+    Note: la ligne recherchée est n+1 car la commande saisie ajoute 1.
+    -l | LIST <n>  Affiche les n dernières entrées de l'historique
+    -e             Avec options -l, -n ou recherche, exécute les
+                   entrées trouvées au lieu de les afficher.
+      Attention ! Utilisation de -e à vos risques et périls !
+        Risque d'exécution infinie de commande HIST avec levée de
+        StackOverflowError si une commande HIST est embarquée avec -e
+        Ex: print test; eval HIST -e .*test
+
+  Raccourcis utiles (de la bibliothèque JLine) :
+  Note : ces raccourcis peuvent varier en fonction de la plateforme et
+  du terminal utilisés.
+   - CTRL+A / Origine     : place le curseur en début de ligne
+   - CTRL+B / Flèche G    : déplace le curseur d'un car. à gauche
+   - CTRL+D (ligne vide)  : quitte le terminal
+   - CTRL+D (sur car.)    : supprime le car. sous curseur
+   - CTRL+E / Fin         : place le curseur en fin de ligne
+   - CTRL+F / Flèche D    : déplace le curseur d'un car. à droite
+   - CTRL+G / Flèche D    : déplace le curseur au mot précédent
+   - CTRL+H / Retour      : supprime le car. devant le curseur
+   - CTRL+I / Tabulation  : complète le mot (table/fichier)
+   - CTRL+J/M / Entrée    : valide la ligne actuelle
+   - CTRL+K               : supprime la ligne depuis le curseur
+   - CTRL+L               : efface la console
+   - CTRL+N / Flèche bas  : affiche la commande suivante
+   - CTRL+P / Flèche haut : affiche la commande précédente
+   - CTRL+R               : ouvre une recherche par mot et exécute
+   - CTRL+U               : supprime la ligne devant le curseur
+   - CTRL+V               : colle le presse papier au curseur
+   - CTRL+W               : supprime le mot avant le curseur
+   - CTRL+X               : déplace le curseur d'un mot à gauche
+
+  Ne modifie pas la constante _RET_VALUE.

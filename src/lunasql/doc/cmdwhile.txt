@@ -1,0 +1,37 @@
+  WHILE : Teste une expression et boucle sur les arguments
+  WHILE <expr_bool> <bloc> [ELSE <bloc>]
+  'expr_bool' est évaluée par le moteur SE courant : avec le SE par
+  défaut javascript, elle peut contenir && (et), || (ou), ! (non),
+  parenthèses... Elle peut être encadrée par "", [] ou {} pour grouper
+  l'expression en un seul argument.
+  'bloc' doit être déclaré par {} ou "" car il doit aussi former un seul
+  argument. Le bloc ELSE est évalué si 'expr_bool' est fausse dès la
+  première itération.
+
+  Exemples :
+     var i -- i est une variable du SE par défaut (js)
+     i=0; WHILE "i++ < 5" { print i=$[i]; print ok }
+     i=5; WHILE [i++ < 5] { print ko } else { print i=$[i]; print ok }
+     def i 0; WHILE {$(i#inc!)<5} { print i=$i; print ok }
+     i=0; while i++<3 {j=0; while j++<3 {print $[i] $[j]}}
+
+  Notes :
+   - les substitutions $ seront peut-être réalisées *en amont*
+     cf. help substitutes selon usage de "", (), {}, prendre l'habitude
+     d'encadrer les blocs par {}.
+   - 'expr_bool' peut contenir des variables LunaSQL, mais attention à
+     l'encadrer par {} pour différer la substitution.
+   - les vars. locales déclarées en boucle sont accessibles pour tous
+     les tours de la boucle.
+   - l'environnement local contient les options suivantes :
+      _LOOP_DEEP  : profondeur actuelle de boucle
+      _LOOP_BREAK : profondeur à l'appel à BREAK (fac.)
+
+  Attention : 'expr_bool' doit être évalué à chaque tour, ce qui n'est
+  pas le cas si utilisation d'une variable de LunaSQL (hors SE).
+  Exemple de boucle qui tue car '$(a)' n'est évalué qu'une fois :
+       def a 1 2 3; WHILE '$(a)'!='' {print $(a#pshift)}
+
+  Ne modifie pas les constantes _RET_VALUE et _CMD_STATE (sauf erreur),
+  mais les commandes exécutées peuvent les modifier. Attribue 0 à
+  _RET_VALUE si aucun bloc exécuté.

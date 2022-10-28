@@ -1,0 +1,15 @@
+  VIEW : Affiche le résultat d'une requête SELECT ou d'une table en
+       JTable (avec composant Swing)
+  VIEW tbl   : Liste le contenu de la table tbl et l'affiche
+  VIEW req   : Exécute la requête SELECT req et l'affiche
+       Exemple : VIEW select * from test
+
+  La taille des données retournées est limitée à 200 lignes et une
+  erreur est levée si plus de 16 colonnes.
+  Notes : - en mode HTTP, cette commande n'est pas autorisée,
+          - bien que les cellules soient éditables, il n'y a pas de
+            modification des données dans les tables.
+
+
+  Contrairement à SELECT, ne modifie pas la constante _RET_VALUE
+  Attribue le nombre de lignes retournées à la constante _RET_NLINES.

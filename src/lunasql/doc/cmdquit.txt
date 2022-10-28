@@ -1,0 +1,10 @@
+  QUIT (Q) : Déconnecte de la base et quitte la console ou le fichier
+  QUIT            Quitte normalement (équivalent à QUIT 0)
+  QUIT <e>        Quitte avec l'état d'erreur positionné à l'état e
+  QUIT <e> <msg>  Quitte avec l'état d'erreur positionné à l'état e en
+                  affichant le message d'erreur msg
+
+  Depuis la console, CTRL+D déclenche la commande QUIT. En mode HTTP,
+  cette commande est annulée. Elle peut être annulée par le
+  positionnement à 0 de la var. locale 'cancel' en :ON_QUIT. Annulée,
+  ella a le même effet que EXIT.

@@ -1,0 +1,15 @@
+  RETURN (^) : Sort du fichier de commandes ou du bloc de code en cours
+  RETURN [valeur]
+  Remonte d'un niveau dans la pile après l'appel à RETURN. Le résultat
+  est retourné pour la commande englobante $[] et placé en constante
+  _RET_VALUE, mais n'est pas affiché.
+
+  Exemples :
+    RETURN 1
+    -- un peu plus corsé : incrémentation de variable à la Tcl
+    def incr {RETURN $($arg1#inc)}        -- par fonction inc
+    def incr {RETURN $($arg1%!+$(*arg2?1))}  -- avec 2ème arg
+    -- cf aide de macro defmacro pour incr...
+
+  Attribue à _RET_VALUE la valeur chaîne en paramètre, rien si aucun
+  paramètre.

@@ -1,0 +1,91 @@
+La substitution $[] permet d'exécuter du code selon le ScriptEngine
+en cours (par défaut : Javascript). Exemples pour le SE js :
+ SQL> print $['abc'.toUpperCase()]
+ SQL> 'abc'.toUpperCase()
+ SQL> (print ('ok')) -- les () ou "" forcent le choix de print de js
+Le SE js fourni avec le JRE peut autoriser des structures de données
+très complexes, ex. JSON (cf. documentation du JRE et commande LET).
+Dans le cas du SE JS, en plus de toutes les fonctions du langage JS
+implantées dans le JRE, LunaSQL ajoute les variables et fonctions
+suivantes :
+
+Fonctions de base : (chargées par défaut)
+  include(f)     : exécute/charge le fichier JS f
+  contexEval(s)  : évalue le code LunaSQL s (ret: statut sortie)
+  isString(o), isArray(o), isInt(o), isFloat(o) : tests de type
+  isEmail(o), isUrl(o) : tests de format de chaîne
+  toJSON(obj,sp) : sérialise un objet au format JSON (avec/sans esp.)
+  toObject(str)  : désérialise du texte JSON en objet
+  printObj(o)    : affiche un objet au format JSON
+  I(n)           : formate un nombre en supprimant les décimales
+  messageInfo(m,t), messageWarn(m,t), messageError(m,t) : dialogues
+Manipulation de chaînes :
+  trim(s), ltrim(s), rtrim(s) : suppression d'espaces
+  lpad(s,p,l), rpad(s,p,l)    : chaîne s plus l caractères p
+  starts(s,r), ends(s,r) : chaîne s commence/finit par regex r
+  upper(s), lower(s)    : chaîne s en majuscules/minuscules
+  encodeHtml(s) : chaîne s dont éléments HTML protégés
+  stripHtml(s) : chaîne s dont balises HTML supprimées
+  truncate(s,l) : chaîne s tronquée à la longueur l
+  onlyLetters(s) : seulement les lettres de la chaîne s
+  onlyLettersNums(s) : seulement les lettres/num de la chaîne s
+Manipulation de tableaux :
+  sortn(a)  : tableau a rangé par ordre numérique
+  find(a,s) : teste si tableau contient s (reg, str ou num)
+  remove(a,v)   : ôte l'élément v du tableau a
+  contains(a,v)  : teste si a contient strictement v
+  map(a,f)  : applique à chaque élément du tab. a la fonc. f
+  indexOf(a,n) : index de n dans a
+  lastIndexOf(a,n) : dernier index de n dans a
+  forEach(a,f) : exécute f pour chaque élément de a
+  insert(a,i,v) : insère un élément v à la position i de a
+  shuffle(a)   : tab. a avec les éléments dans le désordre
+  unique(a)    : tab. avec éléments uniques de a
+  concat(a,a2) : additionne une ou plusieurs tableaux
+  copy(a,a2)   : copie les éléments du tab. a vers a2
+  pop(a)    : ôte et retourne le dernier élément de a
+  push(a)   : ajoute un ou x éléments à la fin de a
+  shift(a)  : ôte et retourne le premier élément de a
+  slice(a,a2,c) : copie et retourne plusieurs éléments c
+  splice(a,a2,c) : ôte ou remplace x élém. et les retourne
+  unshift(a,c)  : ajoute c au début de a et retourne la taille
+  sortObjectsByProperty(a,f,r,p) : range un tab. par propriété
+   f:field, r:reverse, p:primer
+  cf http://4umi.com/web/javascript/array.php
+
+Fonctions diverses : bibliothèque 'sys'
+  variables : JV, OS, OSWin, WD (environnement), engine (SriptEngine),
+     lunasql (cf. aide de la commande ENGINE)
+  fonctions : ENV()
+
+Fonctions de manipulation de dates : bibliothèque 'time'
+  millis()     : temps système en ms
+  date([f])    : date système selon format f
+  datefrm([d,f]) : date d selon format élaboré f
+  isoDateString(d) : convertit une date en ISO
+  + bibliothèque XDate* v0.8.2, cf https://arshaw.com/xdate/
+
+Fonctions et constantes mathématiques : bibliothèque 'math'
+  E, PI        : constantes mathématiques e et pi
+  sin(x), cos(x), tan(x), asin(s), acos(x), atan(x), atan2(y,x),
+  exp(x), log(x), ln(x), pow(x,y), ceil(x), floor(x), round(x),
+  sqrt(x), cbrt(s), rand(), randn(x) (package Math)
+  intToBase(number,ob,nb), logb(x,base), roundp(x,places),
+  fractApprox(x,maxDenom), fractReduce(numer,denom)
+  + bibl. jStat* v1.9.4, cf https://github.com/jstat/jstat
+    https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js
+  + bibl. Decision-Tree* v.0.2.1 (algo décisionnel ID3)
+   cf https://github.com/serendipious/nodejs-decision-tree-id3
+  + bibl. DNN* v.0.1.0 cf https://github.com/junku901/dnn
+
+Fonctions de manipulations d'objets JS : bibliothèque 'obj'
+  Class.extend({ props }) : programmation "objet" en JS
+  + bibl. sugar* v2.0.4 cf. https://sugarjs.com/
+  + bibl. underscore* v1.11.0, cf https://underscorejs.org/
+  + bibl. taffy* cf. https://github.com/typicaljoe/taffydb
+    (le projet semble arrêté)
+
+Note : ces fonctions appartenant au moteur js, elles ne peuvent pas
+       bénéficier de l'auto-complètement, ni de l'aide des commandes.
+  Il est possible d'ajouter manuellement des bibliothèques, en la
+  plaçant en CLASSPATH sous une ressource /lunasql/jsextras/.

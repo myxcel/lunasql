@@ -1,0 +1,6 @@
+  TRUNCATE : Purge le contenu d'une table
+             Vérifiez si TRUNCATE est disponible sur votre SGBD.
+  TRUNCATE TABLE <table>
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.
+  

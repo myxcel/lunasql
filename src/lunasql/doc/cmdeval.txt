@@ -1,0 +1,58 @@
+  EVAL (=) : Évalue une commande LunaSQL ou une expression SE en
+             espace confiné et la retourne
+  EVAL cmd   évalue la commande cmd et retourne son resultat
+  Si option -t : affiche le temps d'exécution.
+  Si option -v : accepte un dictionnaire de variables locales qui peut
+  être encadré par "", [] ou {} (cf. doc de la commande DICT).
+
+  Si options -c=<c> [-n=<f>] : attrape l'erreur d'exécution si elle est
+  produite par une commande listée par le filtre f (ou si l'option n
+  est absente), puis exécute le code c (c et f peuvent être des chaînes
+  vides). Le filtre f est une liste de noms de commandes (ou macros)
+  pour lesquelles l'erreur doit être rattrapée.
+  Avec l'option -f=<c> : bloc "finally" à exécuter dans tous les cas.
+  En bloc -c, les variables locales suivantes sont disponibles :
+     - err_lng : numéro de ligne de l'erreur
+     - err_cmd : commande ayant lancé l'erreur :
+         - nom en majuscules si commande interne ou un plugin
+         - nom identique si macro ou alias en :ALIAS_ARG 1
+         - "ALIAS" si alias appelé par préfixe :
+         - expression complète si expression SE
+     - err_msg : message d'erreur complet
+     - err_stk : pile d'appels
+  Les variables locales déclarées en bloc principal sont accessibles
+  en bloc -c ("catch") et -f ("finally").
+
+  Exemples :
+     EVAL frm select * from test  -- avoir chargé 'frm' avant
+     EVAL size TABLE1              --> 42
+     EVAL {def -l a; print $a}     -- $a est locale à EVAL
+     def PI $[EVAL 4*Math.atan(1)] --> 3.141592653589793
+        -- bien que pour du calcul let soit à préférer
+     EVAL -v [a=42//b=54] {put $a} --> 42
+
+  EVAL sert aussi à exécuter du code en espace restreint :
+     EVAL {def -l a foo; print $a}  -- a est confinée
+     EVAL {print $noexist} -c={print "Erreur: $err_msg"}
+     EVAL {risky} -c my-catch-macro -f my-finally-macro
+     EVAL {risky} -c ""  -- erreur "ignorée"
+     -- erreur ici attrapée car commande def présente en filtre
+     EVAL {def noexist} -c={print "Commande: $err_cmd"} -n=def,opt
+     -- maintenant la commande à filtrer est une macro
+     def f {error "erreur en f"}  -- la commande est une macro
+     EVAL f -c={print "attrapée"} -n=f
+     -- les blocs EVAL sont imbricables
+     EVAL {risky} -c { eval { def $noexist } -c={/* exécuté */} }
+
+  Notes :
+   - L'évaluation normale d'une commande est réalisée par $[]
+   - Avec l'option -c (gestion d'erreur), en cas d'erreur le reste du
+     bloc est exécuté en fonction de la valeur de :EXIT_ON_ERR.
+     :ON_ERROR n'est pas évaluée si l'erreur est rattrapée par -c
+   - En bloc -c, une déclaration par def -u doit prendre en compte
+     une profondeur +1 (et encore +1 si eval exécute une macro)
+
+  Ne modifie pas _RET_VALUE, car est modifiée par le bloc exécuté ou
+  par le bloc -c en cas d'erreur, selon :EXIT_ON_ERR (la dernière
+  expression évaluée est retournée). Avec l'option -c, attribue 0 à
+  _CMD_STATE

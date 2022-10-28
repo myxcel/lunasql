@@ -1,0 +1,52 @@
+  PRINT (<) : Affiche le message en paramêtre sur la sortie
+  PRINT <options> <message>
+  Options :
+   -e : imprime le message sur la sortie erreur
+   -n : n'ajoute pas de saut de ligne final
+   -s : pas d'affichage en mode évaluation (ex. encadré en $[])
+   -f : efface la console (selon plateforme)
+   -b : émet un biip agaçant (ne fonctionne pas partout)
+   -v=<numverb>  <message>  : écrit le message selon niveau de verbosité
+    <numverb> parmi :
+        0   Silence
+        1   Affiche
+        2   Message
+        3   Bavard
+        4   Debug
+   -c=<numcolor> <message>  : écrit le message en couleur
+    <numcolor> parmi :
+        0   None
+        1   Black
+        2   Red
+        3   Green
+        4   Yellow
+        5   Blue
+        6   Magenta
+        7   Cyan
+        8   White
+        9   Bright Black
+        10  Bright Red
+        11  Bright Green
+        12  Bright Yellow
+        13  Bright Blue
+        14  Bright Magenta
+        15  Bright Cyan
+        16  Bright White
+
+  Notes :
+   - le système MS Windows (même en version 10) est réticent à
+     supporter l'ANSI par défaut. Pour en activer le support, éditer le
+    registre et ajouter (ou modifier) la clef suivante :
+        [HKEY_CURRENT_USER\Console]
+        "VirtualTerminalLevel"=dword:00000001
+   - le paquet 'const' définit des constantes pour cette commande.
+
+  Exemples :
+       PRINT "message libre qui devra s'afficher"
+       PRINT -n "pas de fin de ligne"
+       PRINT -be "un message d'erreur sur la sortie erreur !"
+       PRINT -n -c=2 "ceci est un pseudo message d'erreur"
+  Sans être obligatoire, il est recommandé d'encadrer la chaîne par
+  des guillemets.
+
+  Ne modifie pas la constante _RET_VALUE.

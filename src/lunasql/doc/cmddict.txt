@@ -1,0 +1,96 @@
+  DICT : Outils de gestion de dictionnaires de chaînes
+  DICT commande dictionnaire [params]
+    Le dictionnaire peut être encadré par "", [] ou {}. Mais il vaut
+    mieux préférer l'usage de {} (sauf en cas de substitutions en
+    dictionnaire). Le format supporté est Properties, cf doc
+    http://docs.oracle.com/javase/8/docs/api/java/util/Properties.html
+    Les paires chef=valeur sont séparables par un saut de ligne ou
+    bien // (échapable par \/\/).
+
+    Commandes (insensibles à la casse) et valeurs de retour :
+    - NEW    : crée un nouveau dictionnaire et le retourne
+          Ex: DICT new a do b ré c "mi fa sol"
+    - GET    : -> valeur correspondant à la clef fournie, ou défaut
+          La valeur par défaut n'est évaluée que si clef non trouvée
+          Ex: DICT get {a:1// b:2} b  --> 2 (*)
+              DICT get {a:1// b:2} c  --> (vide)
+              DICT get {a:1// b:2} c 3 --> 3
+              DICT get {a:1// b:2} b ^$[6*3]--> 2, 6*3 non calculé
+    - HAS-KEY? : -> 1 si le dict. contient la clef donnée, 0 sinon
+    - HAS-VAL? : -> 1 si le dict. contient la valeur donnée, 0 sinon
+    - EMPTY? : -> 1 si le dictionnaire est vide, 0 sinon
+    - SIZE   : -> nombre de clefs dans le dictionnaire
+    - PUT    : ajoute un couple clef-valeur au dictionnaire
+          Ex: DICT put $dict key1 value --> $dict pas modifié
+              DICT put "" a 123 --> création d'un nouveau dict.
+    - REMOVE : supprime un couple clef-valeur du dictionnaire
+    - MERGE  : fusionne deux dictionnaires et retourne le résultat
+          -> (les clefs en doublon sont mises à jour par le 2ème)
+          Utile pour les macros à arguments nommés (DICT) par défaut
+          Ex: DICT merge {a:do//b:sol//d:fa} {a:ré//c:mi}
+              --> {a=ré//b=sol//c=mi//d=fa}
+    - KEYS   : -> liste des clefs dans le dictionnaire
+    - VALUES : -> liste des valeurs dans le dictionnaire
+    - LOCAL  : ajoute le dictionnaire à l'environnement local. Si une
+          liste (sép ',') de clefs est fournie, filtre l'ajout de var.
+          Ex: DICT local {a:do//b:ré}    --> ajoute les var. a,b
+              DICT local {a:do//b:ré} a  --> ajoute la var. a (pas b)
+              DICT local $[seek select * from books where id = 42]
+    - EACH : applique une macro à chaque couple, référencé par
+          $arg1 (clef) et $arg2 (valeur) dans la fonction, et
+          retourne le nombre d'itérations.
+          Ex: DICT each {1:do//2:sol} {print $arg1=>$arg2}
+              DICT each {1:do//2:sol} {arg k v; print $k=>$v}
+    - APPLY : applique une fonction à chaque couple, référencé par
+          $arg1 (clef) et $arg2 (valeur) dans la fonction, et retourne
+          un dictionnaire. Modifier explicitement la référence.
+          Ex: DICT apply {1:do//2:ré} {def -l arg2 $[str upper $arg2]}
+              DICT apply {1:do} {arg k v; def -l arg2 $[str upper $v]}
+    - FILTER : applique une fonction booléenne filtre à chaque couple,
+          référencé par $arg1 (key) et $arg2 (val) dans la fonction et
+          retourne un dictionnaire.
+          Ex: DICT filter {1:do//2:sol} {$[str len $arg2] > 2}
+              DICT filter {1:do//2:sol} {arg k v; $[str len $v] > 2}
+          Note : pour APPLY et FILTER, les var. locales déclarées en
+          boucle sont accessibles pour tous les tours de la boucle.
+    Notes pour APPLY, FILTER et EACH :
+       - les var. locales déclarées en boucle sont accessibles pour tous
+         les tours de la boucle
+       - la commande ARG est candidate (utilise les arguments argX).
+          Ex : def f { arg k v; print $k => $v }; DICT apply {a=42} f
+    - ANY? : cf. filter, mais retourne 1 si au moins un élément est vrai
+          Ex: DICT any? {1:do//2:sol} {$[str len $arg2] > 2} --> 1
+    - ALL? : cf. filter, mais retourne 1 si aucun élément n'est faux
+          Ex: DICT all? {1:do//2:sol} {$[str len $arg2] > 2} --> 0
+
+  Note : (*) : '//' (séparateur de paires) est utile pour des commandes
+    sur une ligne et pour l'usage avec l'option :END_CMD_NL à 1 et avec
+    cleansql (ex. defmacro), mais en général il est préférable surtout
+    en script de conserver le format de Properties :
+        def opts {
+          # Comment
+          key1 = value 1
+          key2 = value 2
+        }  -- au lieu de : def opts {key1 = value 1//key2 = value 2}
+
+  Exemple d'utilisation typique :
+    -- Recherche de valeur de fruits
+    def fruits2 {
+      pomme=1
+      banane=2
+      poire=3
+      fraise=4
+    }
+    print "valeur de fraise : $(fruits2,fraise)"
+
+  Exemple d'utilisation pour des arguments nommés par défaut:
+    defmacro func {[args]} {
+      -- args est un dictionnaire aux clefs optionnelles
+      def opts $[DICT merge $[DICT new a 10 b 11 c 12] $args]
+      print "a=$(opts,a), b=$(opts,b), c=$(opts,c)"
+    }
+    func {a=42}  --> a=42, b=11, c=12
+  
+  Note : les opérations fonctionnent sur les valeurs et non sur les
+         références. Il n'y a pas de modification de variable.
+  Attribue à _RET_VALUE la valeur générée par la sous commande

@@ -1,0 +1,18 @@
+  MAIL : Envoi d'un courrier électronique à un destinataire par mail
+  MAIL [options] -h=<serveur smtp> [-o=<port>] [-u=<nom>] [-p=<mdp>]
+    -d=<destinataire:A> -c=<destinataire:CC> -i=<destinataire:CCI>
+    -e=<expediteur> -b=<sujet> -f=<fichier à joindre> <corps>
+    options : -a (authentification) avec -u=<username>, -p=<password>
+              -o=<port>, -t (chiffrement TLS), -g (DEBUG)
+              -y (mode hypertexte HTLM)
+
+    Exemple : MAIL -d=aa@bb.com,cc@ee.net -b=\"Réunion\" {Bonjour...}
+
+    Notes :
+      - requiert la bibliothèque javamail.jar (et la bibl. 'mail')
+      - les valeurs des options h, o, u, p sont conservées en mémoire
+      - il peut y avoir plusieurs options d, c et i, et chacune peut
+        contenir des adresses séparées par ,
+      - les adresses en 'Nom Prénom <adresse@dom.xx>' sont supportées
+
+  Attribue 1 à la constante _RET_VALUE.

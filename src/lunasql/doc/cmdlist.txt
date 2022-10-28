@@ -1,0 +1,136 @@
+  LIST : Outils de gestion de listes.
+  LIST commande liste [params]
+    La liste peut être encadrée par "", [] ou {}. Mais il vaut mieux
+    préférer l'usage de {} (sauf en cas de substitutions en liste).
+
+    Commandes (insensibles à la casse) et valeurs de retour :
+    - NEW   : -> nouvelle liste depuis éléments fournis
+          Ex: LIST new "do ré" "mi fa" --> {do ré} {mi fa}
+    - FLAT  : -> nouvelle liste dont les {} ont été supprimées
+          Ex: LIST flat {do ré} {mi {fa sol}} --> do ré mi fa sol
+    - CONCAT : -> nouvelle liste en mettant à la plat les éléments
+          Ex: LIST concat {do ré} {mi {fa sol}} --> do ré mi {fa sol}
+    - SIZE  : -> nombre d'éléments de la liste
+    - GET   : -> élément à la position n
+          Ex: LIST get {do ré mi fa} 3 --> fa
+    - INDEX : -> index d'emplacement de l'élément dans la liste
+    - INDEX-IC : idem, mais insensible à la casse
+    - LINDEX : -> dernier index d'emplacem. de l'élément dans la liste
+    - LINDEX-IC : idem, mais insensible à la casse
+    - HAS?  : -> 1 si la liste contient l'élément donné, 0 sinon
+          Ex: LIST has? {do ré mi fa} sol --> 0
+    - HAS-IC? : idem, mais insensible à la casse
+    - SUBLST : -> sous-liste selon index fournis au format début:fin
+          Voir l'aide de la substitution $(x@d:f)
+          Ex: LIST sublst {do ré mi fa} 1:-1 --> {ré mi}
+    - JOIN  : -> chaîne formée par les éléments joints par la chaîne,
+          défaut "" (chaîne vide)
+          Ex: LIST join {do ré mi fa} : --> do:ré:mi:fa
+              LIST join {do ré mi fa}   --> dorémifa
+    - FIND  : -> élément dans la liste du patron regexp fourni
+          Ex: LIST find {do ré mi fa} f.* --> fa
+    - FIRST  : -> n premier(s) élément(s) de la liste, défaut 1
+          Ex: LIST first {do ré mi fa}    --> do
+              LIST first {do ré mi fa} 2  --> do ré
+    - LAST   : -> n dernier(s) élément(s) de la liste, défaut 1
+    - PUSH   : -> nouvelle liste avec l'élément ajouté
+          Ex: LIST push {do {ré mi}} {fa sol} --> do {ré mi} {fa sol}
+    - SHIFT  : -> liste sans son premier élément
+          Ex: LIST shift {do ré mi fa} --> {ré mi fa}
+    - POP    : -> liste sans son dernier élément
+          Ex: LIST pop {do ré mi fa} --> {do ré mi}
+    - INSERT : -> liste avec l'élément fourni inséré en position n,
+          défaut 0 (première position)
+          Ex: LIST insert {do ré mi fa} sol 2  --> {do ré sol mi fa}
+              LIST insert {do ré mi fa} sol -1 --> {do ré mi fa sol}
+              LIST insert {do ré mi fa} sol    --> {sol do ré mi fa}
+    - REMOVE : -> liste avec l'élément en position n supprimé
+          Ex: LIST remove {do ré mi fa} 2 --> {do ré fa}
+              LIST remove {do ré mi fa} -1 --> {do ré mi}
+    - REPLACE : -> liste avec l'élément n remplacé par le fourni
+          Ex: LIST replace {do ré mi fa} 2 sol --> {do ré sol fa}
+              LIST replace {do ré mi fa} -1 si --> {do ré mi si}
+    - REVERSE : -> liste dont l'ordre des éléments est inversé
+          Ex: LIST reverse {do ré mi fa} --> fa mi ré do
+    - MIN : -> plus petit élément (liste de nombres)
+    - MAX : -> plus grand élément (liste de nombres)
+    - SUM : -> somme des éléments (liste de nombres)
+          Ex: LIST sum {5 2 9 1} --> 17
+    - SORT : -> liste rangée selon les ordres disponibles suivants :
+          nbr|nbr-rev|str|str-rev (défaut: str)
+          Ex: LIST sort {do ré mi fa} str --> {do fa mi ré}
+              LIST sort {3 1 2 10}        --> {1 10 2 3}
+              LIST sort {3 1 2 10} nbr    --> {1 2 3 10}
+    - RANGE : -> liste numérique définie par la séquence. Cf. FOR -r
+    - NVL   : -> premier élément non vide de la liste
+          Ex: LIST nvl {{} 2 3} --> 2
+              LIST nvl $arg_ls  --> premier argument non vide
+              def a ""; LIST nvl [{$a} {val def}] --> val def
+    - PICK  : -> liste de n éléments pris aléatoirement
+          Le même élément peut être repris plusieurs fois.
+          Ex: LIST pick {1 2 3 4 5}   --> ex. 3
+              LIST pick {1 2 3 4 5} 2 --> ex. 5 2
+    - RAND  : -> liste dont éléments sont rangés par ordre aléatoire
+          Ex: LIST rand {1 2 3 4 5}   --> 3 2 5 4 1 (exemple)
+    - UNIQ  : -> liste dont les éléments en doublons sont retirés
+    - MINUS : -> liste résultante de la liste 1 Moins la liste 2
+    - UNION : -> liste union entre deux listes fournies
+    - INTER  : -> liste intersection entre deux listes fournies
+    - EACH : applique une fonction à chaque élément, référencé par
+          $arg1 dans la fonction, et retourne le nombre d'itérations.
+    - APPLY : applique une fonction à chaque élément, référencé par
+          $arg1 dans la fonction, et retourne une liste.
+          Ex: LIST apply {do ré mi fa} {str upper $arg1}
+              --> DO RÉ MI FA
+              LIST apply $[LIST range -3:5] {arg x; $x*$x + 3*$x - 2}
+              --> -2 -4 -4 -2 2 8 16 26
+              LIST apply {a bb ccc dddd} {'$[str len $arg1]:$arg1'}
+              --> 1:a 2:bb 3:ccc 4:dddd
+    - FILTER : applique une fonction booléenne filtre à chaque élément,
+          référencé par $arg1 dans la fonction, et retourne une liste.
+          Ex: LIST filter {do ré sol} {$[str len $arg1] > 2}
+    - REDUCE : applique une fonction de réduction sur la liste.
+          Un dernier arg. optionnel est la valeur init.
+          $arg1 référence le résultat précédent, $arg2 l'élément
+          Ex: LIST reduce {1 2 3 4 5} {$arg1 + $arg2} 10 -- comme sum
+              LIST reduce {2 4 6 8} {arg prod e; $prod * $e}
+              -- calcule le produit des éléments du tableau
+              LIST reduce {a b c d} { '$arg1/$arg2' }
+              -- comme à  LIST join {a b c d} /
+    Notes pour APPLY, FILTER et REDUCE :
+       - les var. locales déclarées en boucle sont accessibles pour tous
+         les tours de la boucle
+       - la commande ARG est candidate (utilise les arguments argX).
+          Ex: def f { arg n; $n * $n }; LIST APPLY {2 3 4} f
+    - ANY? : cf. filter, mais retourne 1 si au moins un élément est vrai
+          Ex: LIST any? {1 3 4 7 0} {$arg1 % 2 == 0} --> 1
+    - ALL? : cf. filter, mais retourne 1 si aucun élément n'est faux
+          Ex: LIST all? {1 3 4 7 0} {$arg1 % 2 == 0} --> 0
+    - REPEAT : -> liste formée de n fois la chaîne donnée
+          Ex: LIST repeat {do ré} 2  --> {do ré} {do ré}
+    - ONES : -> liste formée de n fois "1"
+    - ZEROS : idem avec "0"
+    - COMMAND? : -> 1 si la liste est une commande valide, 0 sinon
+          Ne contrôle pas le nombre d'arguments pour une commande.
+    - TOCSV : -> une chaîne au format CSV de la liste en arg.
+          Ex: LIST tocsv {do ré {mi fa}} --> "do";"ré";"mi fa"
+
+  Exemple d'utilisation typique :
+    -- Recherche de valeur de fruits (liste de listes)
+    def fruits {
+      {pomme 1}
+      {banane 2}
+      {poire 3}
+      {fraise 4}
+    }
+    def fruit-val {
+      for fruit $fruits {
+        def -l nom,val $[list sublst $fruit 0] $[list sublst $fruit 1]
+        if $[str starts? $nom $arg1] {return $val}
+      }
+    }
+    print "valeur de fraise : $[fruit-val fraise]"
+
+  Note : les opérations fonctionnent sur les valeurs et non sur les
+         références. Il n'y a pas de modification de variable.
+  Attribue à _RET_VALUE la valeur générée par la sous commande

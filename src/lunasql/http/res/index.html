@@ -1,0 +1,61 @@
+<!--
+  Console HTTP LunaSQL version ${var=version}
+  Gestion d'une base de données en console et script
+-->
+
+<!doctype html>
+<html>
+<head>
+<title>Console LunaSQL HTTP</title>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+
+<script>
+${txt=jquery-1.12.3.min.js}
+
+${txt=highlight.min.js}
+hljs.initHighlightingOnLoad();
+</script>
+
+<style>
+${txt=default.css}
+
+body {background-color: #f0f0ff;}
+input {margin-left:10px;}
+pre code {border:1px solid darkgrey; border-radius: 6px; box-shadow:3px 3px 5px grey;}
+.option {font-size:0.8em;}
+.txtc0 {color:darkgrey;}
+.txtc1 {color:red;}
+.txtc2 {color:green;}
+.txtc3 {color:yellow;}
+.txtc4 {color:blue;}
+.txtc5 {font-weight: bold;}
+#txsql {box-shadow:3px 3px 5px grey;}
+#stdin, #stdout, #stderr {margin:10px; padding:0px 6px 2px 6px;}
+#stderr {background-color:#eedddd; border:1px solid red; color:red;}
+#stdout {background-color:#ddeeee; border:1px solid green;}
+#cmdret {color:blue;}
+#loading {margin-left:20px; padding-left:20px; color:#505050; font-family:monospace;background:url('${img=load.gif}') no-repeat left center;}
+</style>
+</head>
+
+<body>
+<h3>Console LunaSQL HTTP</h3>
+<form id='postsql' action='' method='post' accept-charset="ISO-8859-1">
+<p><b>SQL</b> :</p>
+<table cellpadding='10'><tr><td><textarea id='txsql' name='sqlquery' rows='28' cols='100'>${var=lsqlcode}</textarea></td>
+<td style='vertical-align:top; font-size:0.8em;'>${txt=sql-links.html}
+
+</td></tr>
+</table>
+<input type='submit' value='Exécuter'>
+<input type='button' value='Effacer' onclick='txsql.value=""'>
+<input type='checkbox' name='frmsql' ${var=frmchecked}><span class='option'>Formater le code</span><span id='loading'>Exécution en cours...</span>
+</form>
+<hr>
+<script>
+$('#postsql').submit(function(){$.ajax({url:'',beforeSend:function(){$('#stdin').html('<code>-- en exécution --</code>');$('#stdout').html('');$('#stderr').html('');$('#loading').show();}});return true;});$('#txsql').keypress(function(e){if(e.keyCode===9){var deb=this.selectionStart,fin=this.selectionEnd,val=$(this).val();$(this).val(val.substring(0,deb)+'  '+val.substring(fin));this.selectionStart=this.selectionEnd=deb+2;e.preventDefault();}});$(document).ready(function(){$('#loading').hide();});
+</script>
+
+${var=returndata}
+</body>
+</html>

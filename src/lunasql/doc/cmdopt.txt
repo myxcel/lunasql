@@ -1,0 +1,156 @@
+  OPT (_) : Modifie la valeur d'une option (ou constante) système
+            de configuration de la console ou de l'application.
+  OPT X val  Affecte à une option système X la valeur val
+           Exemple : OPT :PROMPT LunaSQL
+  Avec l'option -l : sans argument, liste les options définies
+  localement ; avec argument, affecte localement l'option (limitée au
+  lecteur en cours).
+  L'option -u<n> fonctionne comme -l, avec liaison de l'option aux
+  lecteurs parents (cf. fonctionnement en commande DEF).
+  Une option commençant par ':' peut être modifiée (configuration),
+  mais une option système commençant par '_' est interne au système, et
+  n'est modifiable que par le programme.
+  Attention : il arrive que, pour des raisons de sécurité, la commande
+    OPT en modification soit verrouillée par l'option de lancement
+    --deny-opt-command. Dans ce cas, toute tentative d'édition d'une
+    option non locale (globale ou lecteurs pères) par OPT sera refusée
+    jusqu'à la fermeture de la console. En revanche, les définitions en
+    option de lancement par --opts et au niveau du fichier de config.
+    (et non du fichier d'init.) sont autorisées.
+
+  OPT s   Recherche les options dont le nom correspond à
+            l'expression régulière s et les affiche
+            L'expr. régulière s peut être encadrée par ` et `.
+       Exemple : OPT AB.* -- affiche les const. commençant par 'AB'
+
+  Attribue la valeur de l'option fixée ou affichée à _RET_VALUE,
+  ou bien le nombre d'options affichées (si aucun argument).
+
+  Options particulières modifiables directement par commande OPT :
+
+    :ADD_ROW_NB : spécifie si (1/0) l'affichage des tableaux de
+      ResultSet comprend une colonne de numéros de lignes.
+    :ALIAS_ARG  : spécifie si (1/0) les arguments d'une commande de
+      type alias sont ajoutés automatiquement (en plus de $(1)...).
+      Avec :ALIAS_ARG à 1, les arguments son passés à l'alias.
+      Avec :ALIAS_ARG à 0, il est possible de lancer un alias en
+      préfixant son nom par ':'. L'usage des alias n'est plus
+      recommandé : préférer les macros (avec :ALIAS_ARG à 1, certaines
+      macros peuvent ne plus fonctionner.
+    :ALLOW_RECUR : spécifie si (1/0) l'exécution récursive d'alias
+      est autorisée (références circulaires). Cette utilisation est
+      à vos risques et périls ! Ne concerne pas les boucles formées
+      par eval, $[]... mais seulement les macros en appel direct.
+    :ALLOW_REDEF : spécifie si (1/0) la redéfinition (masquage) de
+      commandes par un alias/macro du même nom est autorisé. Cette
+      utilisation est à vos risques et périls !
+    :AUTOSAVE_CFG : spécifie si (1/0) on sauve la configuration à la
+      sortie (options et variables).
+    :BEEP_ON : spécifie si la console doit biper sur erreur (à
+      déclarer uniquement en fichier config).
+    :COL_MAX_WIDTH : spécifie la taille max. des colonnes affichées en
+      retour de commandes de type SELECT (doit être entier >= 5).
+    :COLORS_ON   : spécifie si la console se pare de belles couleurs.
+    :EDITOR_PATH : éditeur de texte à utiliser à l'appel de EDIT -p
+    :ENCODING    : spécifie l'encodage des caractères des fichiers.
+      Défaut : valeur de la propriété "file.encoding": UTF-8 (sans BOM)
+    :END_CMD_NL  : spécifie si les commandes sont séparées par une
+      fin de ligne \n (1) ou par un point-virgule (0). Défaut : 1
+      Note : le comportement en console est différent d'en fichier :
+        si (1) ';' est terminateur en console, séparateur en fichier.
+    :EXIT_ON_ERR : spécifie si (1/0) l'exécution d'un script ou d'une
+      chaîne de commandes (séparées par ';') se termine après une
+      commande générant une erreur.
+    :FILE_CONFIRM : spécifie si (1/0) les opérations sur les fichiers
+      doivent demander confirmation si le fichier existe.
+    :HISTORY_DBL : spécifie si l'historique des commandes doit
+      être alimenté par la commande saisie.
+      0: non, 1: simple copie, 2: formatée sur 1 ligne, 3: formatée en
+      multilignes, défaut : 2.
+    :LIST_SUBSTIT : prise en charge de l'évaluation précoce par liste
+      par § plus de l'évaluation normale par $
+    :ON_ERROR    : détermine le code à exécuter en cas d'erreur.
+    :ON_INIT     : détermine le code à exécuter au démarrage (juste
+      après la lecture du fichier d'initialisation). Peut être annulé
+      (quitter l'application) par positionnement de la variable locale
+      'cancel' à 1.
+    :ON_QUIT     : détermine le code à exécuter à la fermeture (par QUIT
+      ou par fin des instructions)
+      Peut être annulé (rester dans l'application) par positionnement
+      de la variable locale 'cancel' à 1. Dans ce cas, QUIT agira comme
+      EXIT, mais on quittera tout de même à la fin des instructions.
+      Ne pas trop compter sur cette annulation quand-même...
+    :PLUGINS_PATH : spécifie la liste des répertoires où rechercher
+      les plugins pour les commandes formées par plugin. Note : le
+      séparateur est ';' pour Windose et ':' pour Linux.
+      Défaut : .:/plugins/
+    :PROMPT : spécifie la chaîne du prompt en cours. Défaut : SQL
+      Peut contenir des substitutions par '$'. Exemples :
+      opt :PROMPT "^$[time now HH:mm] SQL"
+      opt :PROMPT "Base ^$(_CNX_BASE)"
+      def i 0; opt :PROMPT "^$(_CNX_PATH):^$[str lpad ^$(i#inc!) 3 0]"
+    :ROW_MAX_NB : spécifie le nombre maximal de lignes à retourner
+      par une commande de type SELECT (SELECT, DISP, CALL...).
+    :SCRIPTS_PATH : spécifie la liste des répertoires où rechercher
+      les scripts pour les commandes EXEC et START. Le séparateur est
+      ';' pour Window$ et ':' pour Linux. Défaut : .:/scripts/
+    :SELECT_ARRAY : spécifie si (1/0) le format d'affichage des
+      résultats SELECT doit être tabulaire.
+    :SIGN_KEY     : couple de clefs publique|privée pour la signature
+      des scripts (ou autres fichiers/textes) par EdDSA (Ed25519). Les
+      clefs sont générées par la commande SIGN en bibliothèque 'crypt'
+    :SIGN_POLICY : spécifie la politique de sécurité d'éxécution des
+      scripts par signature numérique (0: pas de vérification,
+      1: alerte si clef non fiable, 2: erreur si clef non fiable).
+    :SIGN_TRUST : liste des clefs publiques de confiance séparées par
+      des ',' pour la vérification des signatures numériques.
+
+  Options particulières non modifiables directement :
+
+    _BASES_FILE : nom ou chemin du fichier des définitions des bases.
+    _CMD_BUFFER : liste des commandes dans le tampon (buffer).
+    _CMD_STATE  : état d'exécution de la commande précédente
+      (0 : pas de modif., 1 : modif. effectuée, E : erreur à
+      l'exécution).
+    _CNX_BASE   : nom de la base de données en cours d'utilisation.
+    _CNX_DRIVER : nom du driver de connexion à la base de données.
+    _CNX_LOGIN  : nom de connexion de l'utilisateur en cours.
+    _CNX_PATH   : chemin jdbc complet de connexion à la base de données.
+    _CONFIG_FILE : nom ou chemin du fichier de config. clef:=valeur
+    _CONST_EDIT : indique si les options utilisateur (donc commençant
+      par ':') sont modifiables dans la session en cours.
+      Défaut : 2. L'option de lancement --deny-opt-cmd fixe à 1.
+      (0: aucune opt, 1: opt locales, 2: toutes opt)
+    _DAY_DATE   : date du jour à la connexion (format JJ/MM/AAAA).
+    _DAY_DATE_F : date du jour à la connexion (format AAAAMMJJ, pour
+      être utilisée dans les fichiers, par exemple).
+    _DB_NTYPE   : numéro du type de SGDB (0: ODBC, 1: ACCESS,
+      2: ACCESSX, 3: UCACCESS, 4: HSQLDB, 5: H2DB, 6: MYSQL, 7: ORACLE,
+      8: DERBY, 9: SQLSERVER).
+    _DB_TYPE    : libellé du type de SGBD (ODBC ACCESS ACCESSX HSQLDB
+      H2DB MYSQL ORACLE DERBY SQLSERVER).
+    _ERROR_CMD  : Nom de commande ayant généré la dernière erreur.
+    _ERROR_MSG  : Message complet de la dernière erreur.
+    _ERROR_STK  : Pile d'appels à la dernière erreur.
+    _EVAL_ENGINE : nom du moteur d'évaluation actuel. Modifiable
+      indirectement par la commande ENGINE. Défaut : js (JavaScript).
+    _EXEC_TIME  : durée de l'exécution depuis dernier appel de CHRON.
+    _HISTORY_FILE : nom ou chemin du fich. d'historique des commandes.
+    _INIT_FILE  : nom ou chemin du fichier d'init. de la console.
+    _LOADED_LIBS : liste des bibliothèques chargées (commande USE).
+    _LOGIN_MS   : date de la connexion en ms (Epoch).
+    _NVERBOSE   : numéro de l'état d'affichage de message en cours
+      (0: SILENCE, 1: DISPLAY, 2: MESSAGE, 3: CHATTY, 4: DEBUG).
+    _RET_NLINES : nombre de lignes affectées lors de la dernière
+      commande.
+    _RET_VALUE  : valeur retournée lors de la dernière commande.
+    _SESSION_ID : identifiant unique de session de console.
+    _SQL_UPDATE : spécifie si (1/0) l'exécution des commandes SQL de
+      modification (UPDATE, INSERT, DELETE, CREATE, DROP...) sont
+      autorisées.
+    _VERBOSE    : libellé de l'état d'affichage de message en cours.
+      (SILENCE, DISPLAY, MESSAGE, CHATTY, DEBUG).
+    _VERSION    : numéro de version de l'application LunaSQL.
+    _VERS_NAME  : nom de code de la version de l'application LunaSQL.
+    _WHEN_DEEP  : profondeur de l'environnement conditionnel (WHEN).
+    _WORKING_DIR : répertoire de travail à la connexion.

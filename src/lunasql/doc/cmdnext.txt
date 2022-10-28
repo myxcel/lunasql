@@ -1,0 +1,9 @@
+  NEXT : Continue la plus interne boucle FOR ou WHILE.
+  N'est pas supportée par commandes de traitement de bloc comme
+  LIST, DICT, FILE
+
+  Exemples :
+    for -r i 5 { print $i; NEXT; print "jamais affiché" }
+    i=0; while i++<10 { /* traitement */ NEXT; print "jamais affiché"}
+
+  Attribue 0 à la constante _RET_VALUE

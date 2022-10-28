@@ -1,0 +1,31 @@
+  DCRYPT : Déchiffre le message chiffré donné
+  DCRYPT -k=<c> -i=<i> <msg> Déchiffre le chiffré par clef c, VI i
+  DCRYPT -p=<p> -i=<i> <msg> Déchiffre le chiffré par mot de passe p
+  DCRYPT -f=<f> -k/-p        Déchiffre le fichier f par c ou p
+
+  La clef doit être binaire (typiquement par commande HASH), ou bien
+  founie par -p (dérivation de mot de passe en clef de 128 bits). Avec
+  -k, seuls les 128 ou 256 premiers bits (forts) sont retenus pour la
+  clef (la clef peut faire 128 ou 256 bits).
+  Le vecteur d'initialisation (VI) doit être de 128 bits (typiquement
+  par commande rand -m=sec -t=16).
+  Le chiffré doit être binaire (créé par commandes CRYPT ou EXPORT).
+  Avec l'option -f, l'option -i n'est pas fournie par le VI est
+  attaché au fichier.
+
+  Options : -r=<format_clef> -- b64|hex|utf
+            -u=<format_VI>   -- b64|hex|utf (défaut: hex)
+            -t=<format_msg>  -- b64|hex|utf
+            -a=<algo_cry>    -- AES|Blowfish|DES|DESede
+
+  Exemples :
+    def iv $[rand -m=sec -t=16]  -- génération du VI
+    DCRYPT -k=$[hash clef] -i=$iv 5E28...BB197  --> déchiffré
+    DCRYPT -p=password -i=$iv 5E28...BB197      --> déchiffré
+    DCRYPT -k=$[hash $[input -p mdp?]] -i=$iv 5E28D9...EBB197
+    DCRYPT -r=b64 -t=hex -a=AES -k=4QrcOUm6Wau+VuBX8g+IPg== ^
+           -i=$iv 5E28D95F22DAFCC3...572F38637BEBB197
+    DCRYPT -k=4Qrc... -r=b64 -f=data.txt.cry    --> taille de f
+    DCRYPT -p=password -f=data.txt.cry
+
+  Attribue le résultat à la constante _RET_VALUE ou 0 si erreur.

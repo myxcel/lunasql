@@ -1,0 +1,22 @@
+  WAIT (~) : Attend le temps indiqué ou une frappe au clavier en
+           affichant un message
+  WAIT délai [message]
+  WAIT 'date-heure' [message]
+  Le délai est exprimé en millisecondes. S'il est négatif ou nul,
+  une frappe de la touche ENTREE est attendue pour continuer.
+  Si le premier argument est au format 'dd/MM/yyyy HH:mm:ss:SS'
+  (avec apostrophes), le délai est calculé pour attendre jusqu'à
+  l'heure indiquée.
+
+  Exemples :
+    WAIT 2500 "Traitement terminé"
+    WAIT 0 "Taper ENTREE pour continuer"
+    WAIT '05/02/2017 18:20:00:00' "On attend cette heure précise"
+    -- Exécution après un moment (version synchrone) :
+    def after {WAIT $arg1; eval $arg2}; after 1000 {print ok}
+    def at {WAIT '$arg1'; eval $arg2} -- $arg1 est une heure
+    -- Exécution après un moment (version asynchrone) :
+    def after {start - "WAIT $arg1; eval $arg2"}
+    -- préférez bien sûr utiliser TIME AFTERDO et TIME ATDO
+
+  Attribue à _RET_VALUE le temps d'attente en ms

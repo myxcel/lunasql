@@ -1,0 +1,3 @@
+  ROLLBACK : Annule une transaction SQL au niveau du SGBD
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.

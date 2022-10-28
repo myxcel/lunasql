@@ -1,0 +1,8 @@
+  PLAY : Joue le fichier son (format .wav)
+  PLAY <file>  Joue le fichier file (format doit être WAVE (.wav)).
+  La lecture est réalisée en asynchrone (arrière-plan).
+  
+  Exemple :
+    PLAY sounds/login.wav
+
+  Ne modifie pas la constante _RET_VALUE.

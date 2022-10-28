@@ -1,0 +1,93 @@
+  ENGINE (se) : Liste ou attribue au systême un moteur d'évaluation
+  ENGINE        Affiche le moteur actuel
+  ENGINE -l     Affiche tous les moteurs disponibles (selon CLASSPATH)
+  ENGINE eng    Fixe le nouveau moteur d'évaluation à eng
+    eng peut être le code du moteur, ou un de ses alias.
+    Variables java disponibles depuis le moteur :
+    - eval_engine (javax.script.ScriptEngine) : moteur d'évaluation SE
+    - connection (lunasql.lib.Contexte) : contexte d'exécution LunaSQL
+    Note : lors du passage d'un moteur à un autre, le contexte
+    d'exécution du moteur JavaScript est sauvegardé, mais les autres
+    sont volatiles (ni sauvegardés ni transférés).
+
+  En plus des fonctions du langage SE, LunaSQL ajoute les objets Java
+  suivants (les exemples sont fournis avec la syntaxe de Javascript) :
+
+  - lunasql (lunasql.lib.Coquille) : moteur d'évaluation LunaSQL
+    println(String s), errprintln(String s), eval(String s),
+    getVarOpt(String key), setVar(String key, String val),
+    setOpt(String key, String val), isVarOptSet(String key),
+    getVarHelp(String key)
+    + les fonctions SQL suivantes :
+    seek(sql,enc,rmax), seekNbl(tbl), execute(sql), getResultset(sql),
+    getResultArray(sql) List[][], getMetaData(), getConnex()
+    Exemple d'usage :
+      // SELECT
+      nbl = lunasql.seekNbl("TABLE NAME [+WHERE]")
+      val = lunasql.seek("SELECT COMMAND", "UTF-8") // 1ère cellule
+      rs = lunasql.getResultset("SELECT COMMAND")
+         // objet java.sql.ResultSet
+      ar = lunasql.getResultArray("SELECT COMMAND")
+         // objet java.util.ArrayList<ArrayList<Object>>
+      tb = lunasql.getResultString("SELECT ...",
+                     mode,  // true: tabulaire, false: linéaire
+                     maxcl, // largeur max des colonnes (int)
+                     maxlg, // nombre max de ligne à retourner(int)
+                     rowno  // affichage du num de ligne (boolean)
+      ) // retourne objet String[] à 3 valeurs :
+        // 0: résultat complet, 1: première valeur, 2: nb de lignes
+      // UPDATE
+      nbl = lunasql.execute("UPDATE COMMAND")
+      // Autres
+      lunasql.getMetaData() // objet java.sql.DatabaseMetaData
+
+  - engine (javax.script.ScriptEngine) : moteur d'évaluation SE
+   docs.oracle.com/javase/8/docs/api/javax/script/ScriptEngine.html
+   avec entre autres les fonctions :
+      eval(java.io.Reader flux), eval(String script),
+      get(String key), put(String key, Object value)
+
+  Attribue le nom de l'engine fixé à _RET_VALUE, la valeur du SE
+    actuel si aucun paramètre, ou le nombre en cas de liste.
+
+  Quelques liens et exemples de langages de script sur JVM :
+
+   - Javascript (moteur par défaut inclus en distro JRE jusque 11)
+     https://developer.mozilla.org/en-US/docs/JavaScript/Guide
+     https://developer.mozilla.org/en-US/docs/JavaScript/Reference
+     Exemple :
+      var sql = "select code, valeur, actif from cfgappli"
+      var stmt = sql_connex.prepareStatement(sql)      // sql_connex
+      var rs = stmt.executeQuery()
+      while(rs.next()) {
+        print(rs.getString(1))
+      }
+      rs.close()
+
+   - JRuby (l'énorme)
+     http://www.ruby-lang.org/fr/documentation/ (doc. en français !)
+     http://ruby-doc.org/
+     http://jruby.org/documentation
+     Exemple :
+      return -1 if $sql_connex.nil?
+      sql = "select code, valeur, actif from cfgappli"
+      stmt = $sql_connex.prepare_statement(sql)        # $sql_connex
+      rs = stmt.execute_query
+      while rs.next
+        puts rs.get_string(1)
+      end
+      rs.close
+
+   Autres SE :
+   - Beanshell (c'est du Java)
+     http://www.beanshell.org/manual/contents.html
+     http://docs.oracle.com/javase/7/docs/api/
+   - Jython
+     http://docs.python.org/3/
+     http://www.jython.org/docs/
+   - Groovy
+     http://groovy.codehaus.org/Documentation
+   - Clojure
+     http://clojure.org/documentation
+   - Renjin (R)
+     http://docs.renjin.org/en/latest/

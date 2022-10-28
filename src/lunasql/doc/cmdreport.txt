@@ -1,0 +1,34 @@
+  REPORT : Commande de génération de rapports simples en HTML
+  REPORT fichier_source fichier_généré
+  Le fichier source est typyquement un fichier HTML, mais tout ce qui
+  se trouve entre la balises <% et %> sera interprété par LunaSQL comme
+  ce serait le cas en console ou en fichier. Le résultat retourné par
+  chaque bloc se substituera aux balises.
+
+  Cette commande peut servir pour générer des rapports basiques au
+  format HTML rapidement, mais à noter qu'il est impossible comme en
+  PHP d'imbriquer les blocs avec du code HTML.
+
+  Exemple de modèle de rapport minimaliste "salaires.model" :
+
+----------------------- code -----------------------------------
+
+  <!DOCTYPE html>
+  <html>
+    <p>Date : <% put $_DAY_DATE %></p>
+    <p>Salaires des employés du service info :</p>
+    <table border=1>
+      <%
+      put  -- pour vider la valeur courante
+      for -qn {SELECT NAME, SAL FROM EMPLOYEES WHERE SERVICE='info'} {
+        append "<tr><td>$NAME</td><td>$SAL €</td></tr>"
+      }
+      %>
+    </table>
+  </html>
+
+----------------------------------------------------------------
+
+  REPORT salaires.model salaires.html   --> nb de char. écrits
+
+  Attribue le nombre de caractère écrits à _RET_VALUE.

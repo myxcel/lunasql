@@ -1,0 +1,135 @@
+Expressions de substitutions :
+
+Insertion d'un caractère : $<c> avec c le code caractère.
+Insertion d'une expr./cmd : $[] avec l'expr. ou la commande
+Insertion d'une variable : $() avec le nom de la var. (ou $v).
+
+Liste des formes substituables :
+  $<c>      Remplace c par le caractère correspondant, parmi :
+            n:nouv ligne, t:tab, e:espace, g:", q:', Q:`, c:^,
+            d:$, y:}, Y:{, k:], K:[, s:>, S:<, p:), P:(,
+            r:return, b:backspace, f:formfeed, l:cloche
+            ou le code ascii décimal, ou une chaîne encadrée par ''.
+            Pour une liste complète des codes de caractères, cf.
+            http://www.asciitable.pro/ascii_table.htm
+            ex. print $<n>$<t>$<l>
+            Avec c*n : le caractère est répété n fois :
+            ex. print |$<e*10>|    --> |          |
+                print $<'salut'*3> --> salutsalutsalut
+  $(x)      Résout la variable x.
+            Les macros et alias sont aussi des variables. En tant
+            que commande, utiliser le nom de la commande seul.
+            Ex. def f {print ok}; f -- et non $(f)
+            Si le nom de la var. est alphanumérique, on peut omettre
+            les (), ex. print "2x=$[2 * $x]" -- $x pour $(x)
+            Singularité : def a a; print $($($(a))) --> a
+  $[expr]   Évalue l'expression expr (expr est un code du SE)
+            Utilisée comme une COMMANDE, le $[] est omissible
+            Pour le SE js taper HELP JS-FUNCT pour plus d'information
+  $[cmd]    Évalue la commande cmd, pour être embarquée dans une autre.
+            Peut être une commande SQL ou interne. La valeur de retour
+            de la commande est retournée pour être substituée et
+            affectée à _RET_VALUE.
+            Ex. print $[call 4*5] $[select toto from matable]
+            Avec :END_CMD_NL à 0, nécessite de finir par un ';'.
+            $[] retourne la dernière valeur évaluée.
+  $`prompt` Demande en console 'prompt' et substitue la saisie.
+            Si 'prompt' commence par '?', l'invite est améliorée,
+            ou par '*', les caractères saisis sont affichés en '*'.
+            Si plusieurs 'prompt' identiques sont à substituer, un
+            seul est demandé. Ex. print $`?n`+$`n`
+            Par contre les valeurs sont internes à un lecteur :
+            Ex. print $`?n`+$`n`=$[$`?n`+$`n`] -- 2 demandes.
+            Ici il est préférable d'utiliser des var. locales...
+            Note : quelque soit la saisie, le contenu ne sera pas
+            substitué (ni exécuté). Substitution non imbricable.
+            Ex: $`?val` (amélioré), $`?*val` (amélioré + MDP)
+
+  Notes :
+     - Les substitutions sont faites une seule fois, même si la chaîne
+       retournée contient elle-même des formes substituables.
+     - Les caractères $ et § sont échappables par '^', ex. ^$(x),
+       et en chaîne dure (et an WHEN 0), la substitution par $ n'est
+       pas réalisée.
+     - Commande précédente ou appelante : $(1), $(2), $(3)... sont
+       les arguments, $(_l) la liste et $(_n) le nombre.
+         Ex: void foo; print $1   --> foo
+             def f {print 1=$1 2=$2 nb=$_n}; f do ré --> 1=do 2=ré nb=2
+       Fonctionne aussi en 1re commande de script.
+       Attention : la commande précédente peut être interne !
+         Ex: if 1 {print $0} --> if car c'est la dernière commande
+             put 1 2 3; print $0 --> put
+       Pour les arguments d'une commande, préférer $(arg1), $(arg_ls)
+     - Caractères spéciaux autorisés en nom de variable : .-_
+     - Quand la variable n'existe pas, une erreur est levée, sauf
+       si le nom de variable est préfixé par '*', exemple : $(*x)
+     - Il est possible de retourner une valeur en cas de variable
+       non définie par '?'. Ne pas utiliser de modificateurs.
+         Ex. print $(*x?ND) -- * pour éviter l'erreur
+     - Ne concerne que les variables internes appelables par $(),
+       et non celles appartenant au SE (ex. js) appelables par $[]
+     - Il peut être nécessaire d'encadrer la substitution par "", en
+       particulier si le modificateur sépare l'argument.
+         Ex. "$(a= )", "$(x%*2 + 1)", "$(x/\d{2})"
+     - '$' ou '$$' seul en argument n'est pas substitué
+     - En cas de [ ou ] non fermé dans $[], même dans une chaîne, il
+       doit être échappé par deux '^' par profondeur (c'est comme ça).
+         Ex. print $[put "a^^]"]  --> a]
+             print $[str lower $[put "a^^^^]"]]  --> a]  -- bof bof
+         Autre structure alambiquée à éviter : les "" imbriqués en $[]
+           print $[str lower "a-$[str upper "ouf"]-b"] -- erreur !
+           -- si les "" sont indispensables, préférer cette structure :
+           def -l tmp $[str upper "ouf"]; print $[str lower "a-$tmp-b"]
+
+  Modificateurs pour substitution de variable $() et §() :
+     - égalité (=) : $(x=foo)
+     - inégalité (~) : $(x~foo)
+     - valeur par défaut si non définition ou vide (?) : $(x?defaut)
+       Pour x non definie : $(*x?d) -> d,  $(x?d) -> erreur x non def
+       Pour x definie ""  : $(*x?d) -> "", $(x?d) -> d
+     - valeur définie en lecteur père au niveau n : $(x\n)
+       Ne s'applique qu'aux variables locales, mais si n='g' ou si
+       pas de locale n trouvée, force la recherche en globale.
+     - recherche de clef en dictionnaire (,) : $(x,k)
+     - arithmétique (%) : $(x%*2+1) $(x%<2) $(x%==2*5)
+     - commandes (#) : len : longueur (str), size* : taille (list),
+         inc! : incrémentation (int), dec! : décrémentation (int),
+         empty? : test vide (str), next : incrémentation (str),
+         shift* : décalage (list), shift!* : idem avec retour du 1er,
+         pop!* : retour du dernier (list), index|s| : index de s
+         (str), lstindex|s|* : dernier index de s (str), eval :
+          évaluation, sub : force un passage de substitution
+       *  : s'appliquent à une liste (sép. : espace, tab, ligne ;
+            et encadreurs : rien, []).
+         Note : les séparateurs ne peuvent pas être échappés et sont
+         tous (saut de ligne, tab...) remplacés par ' '
+       Les commandes terminant par ! modifient la variable.
+       |s| : les param. éventuels se déclarent entre | et | séparés
+           par des virgules (échappées par '^' au besoin).
+           Ex. print $(str#len) $(list#size) $(list#has?|abc|)
+               def x a ^"b c^"; $(x#size) --> 2
+     - substitution de chaîne (:) : $(x:reg1=rep1,reg2=rep2...)
+       En cas de substitution de ',' ou '=', les échapper par '^'
+     - extraction de sous-liste (@) : $(x@2) ou $(x@3:) ou $(x@2:4)
+       (liste à encadrer par "" [], ou {} (préféré))
+     - extraction de sous-chaîne (&) : $(x&1,2:3)
+       Pour @ et & : le dernier indice est exclu, les indices négatifs
+       pointent sur la fin de liste et si début > fin, la sous-chaîne
+       est inversée. Si l'indice fin dépasse, ramené au dernier car.
+       Ex: $(s&:), $(s&3:), $(s&:10), $(s&2:-2), $(s&6:2)
+     - comparaison avec regexp (/) : $(x/[A-Za-z_]) (ret. 0|1)
+
+     '!' juste après le caractère de modification modifie la variable
+      ex. $(x%!+1)   -- incrémente x de 1, comme $(x#inc!)
+          $(*x?!foo) -- affectation in situ
+          $(cmd#!eval)  -- résolution paresseuse (cf. commande DEF)
+      Notes :
+        - s'il y a un espace ou un car. spécial (ex. {}) dans la
+          chaîne, il faut encadrer la var. entière par ""
+        - en cas de modification de var. *locale* (par ! ou #cmd!),
+          seuls le lecteur courant et ses fils sont modifiés.
+          Comparez :
+          def -l n 0; ={print $(n%!+1)}; print $n --> 1 0
+          def -l n 0; ={def -u1 n $(n%+1); print $n}; print $n --> 1 1
+
+Pour l'usage des substitutions, voir l'aide "substitutes".

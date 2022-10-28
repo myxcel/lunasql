@@ -1,0 +1,6 @@
+  GRANT : Attribue les droits précisés à l'utilisateur
+  GRANT privilèges ON database_object TO ( PUBLIC | user_list )
+    [ WITH GRANT OPTION ]
+         Exemple : GRANT SELECT ON TABLE MyTable TO toby
+
+  Attribue 0 aux constantes _RET_VALUE et _RET_NLINES.

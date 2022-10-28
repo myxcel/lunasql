@@ -1,0 +1,16 @@
+  PUT : Affecte la valeur de retour sans sortir
+  PUT [valeur]
+  Comme de la commande RETURN, les arguments sont placés en valeur
+  de retour, mais sans que l'exécution soit interrompue. Le résultat
+  est retourné pour la commande englobante $[] et placé en constante
+  _RET_VALUE, mais n'est pas affiché.
+
+  Exemples :
+    PUT 1
+    -- un peu plus corsé : incrémentation de variable à la Tcl
+    def incr {PUT $($arg1#inc)}           -- par fonction inc
+    def incr {PUT $($arg1%!+$(*arg2?1))}  -- avec 2ème arg optionnel
+    -- cf aide de macro defmacro pour incr...
+
+  Attribue à _RET_VALUE la valeur chaîne en paramètre, rien si aucun
+  paramètre.

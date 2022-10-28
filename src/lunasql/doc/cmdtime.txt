@@ -1,0 +1,71 @@
+  TIME : Outils de gestion/formatage de date et heure.
+  TIME commande [options]
+    Le format de date/heure ou la donnée au format date/heure peut
+    être encadré par rien (si aucun espace), "" ou '' (dates).
+    Le format par défaut pour NEW, FORMAT, DIFF, ADD, AFTER? et
+    BEFORE? est : 'dd/MM/yyyy' ou 'dd/MM/yyyy HH:mm:ss'.
+    Le cas échéant le préciser en argument, ainsi que la "locale"
+    parmi : FR, DE, IT, ZH, TW, CA, CAF (français), US, UK, JP, KO
+    Doc sur le format : https://docs.oracle.com/javase/8/docs/api/
+
+    Commandes (insensibles à la casse) et valeurs de retour :
+    - NEW    : -> temps en ms de la date au format et locale donnés
+          Ex: TIME new '24/04/2015' --> 1429910000000
+              TIME new '24/04/2015' 'dd/MM/yyyy'    --> 1429910000000
+              TIME new '24/04/2015' 'dd/MM/yyyy' FR --> 1429910000000
+    - FORMAT : formate et retourne la date donnée selon format donné
+          (défaut : 'dd/MM/yyyy HH:mm:ss')
+          Ex : TIME format 1429910000000 --> 24/04/2015 23:13:20
+               TIME format 1429910000000 'yyyy-MM-dd' --> 2015-04-24
+    - NOW    : -> temps système en ms (currentTimeMillis()) ou formaté
+          Ex: TIME now --> 1429910000000
+              TIME now 'dd/MM/yyyy' --> 24/04/2015
+    - INIT   : déclenche un chronomètre (initialisation à 0)
+    - CHRON  : déclenche et retourne un temps d'exécution. Affecte
+          le résultat en ms à _EXEC_TIME
+    - DATE   : -> date courant au format JJ/MM/AAAA
+          équivalent à : TIME now 'dd/MM/yyyy'
+    - TIME   : -> heure au format HH24:MM:SS
+          équivalent à : TIME now 'HH:mm:ss'
+    - DATETIME : -> date au format JJ/MM/AAAA HH:MM:SS
+          équivalent à : TIME now 'dd/MM/yyyy HH:mm:ss'
+    - DATETIMEMS : -> date au format JJ/MM/AAAA HH:MM:SS:MS
+          équivalent à : TIME now 'dd/MM/yyyy HH:mm:ss:SS'
+    - COMPACT  : -> date au format JJMMAAAAHHMMSS (pour identifiants)
+          équivalent à : TIME now yyyyMMddHHmm
+    - ADD   : -> ajout d'un nombre ms à une date au format spécifié
+          Ex: TIME add '15/01/2001' -259200000 --> 979254000000
+              TIME add '01/15/2001' -259200000 'MM/dd/yyyy'
+    - DIFF   : -> différence entre deux dates au format spécifié en ms
+          Ex: TIME diff 15/01/2001 15/02/2001 --> 2678400000
+              TIME diff '15/01/2011 09:52' '15/01/2011 10:00' ^
+                   'dd/MM/yyyy HH:mm' --> 480000
+    - AFTER?  : -> 1 si la 1re date est après la 2ème, 0 sinon
+          Ex: TIME after? '15/01/2001' '30/01/2001' --> 0
+              TIME after? 15/01/2001 30/01/2001 'MM/dd/yyyy' --> 0
+    - BEFORE? : -> 1 si la 1re date est avant la 2ème, 0 sinon
+    - AT     : exécute en asynchrone le bloc de code à la date donnée
+          en ms. Si l'heure est passée, pas d'éxécution du bloc.
+          Ex: TIME at '08/09/2017 12:30' { print "Il est 12h30 !" }
+    - AFTER  : exécute en asynchrone le bloc de code après le délai
+          exprimé en heure/min/sec/millisec selon h (heures),
+            m (minutes), s (secondes), l (millisecondes).
+          Ex: TIME after 1h25m30s { print "Temps écoulé !" }
+    - REPEAT : exécute en mode asynchrone le bloc de code après chaque
+          délai et n fois, délai s'exprimant comme AFTER
+          Si le délai est 0, l'exécution est (presque) illimitée
+          Ex: TIME repeat 5m35s400l 10 { print ok }
+          -- affiche "ok" toutes les 5min 35sec 400ms, 10 fois
+    - WAIT : attend le délai indiqué (synchrone) avant de poursuivre,
+          délai s'exprimant comme AFTER
+          Ex: time wait 1m30s
+    - DELAY : -> delai s'exprimant comme AFTER converti en ms
+          Ex: TIME delay 2h14m50s   --> 8090000
+
+    À la différence de WAIT, AT, AFTER et REPEAT sont asynchrones et
+    ne retournent rien (car le bloc est exécuté dans un autre Thread).
+    Cf. la remarque en commande START pour l'asynchrone.
+
+    Note : le paquet 'const' définit des constantes pour cette commande.
+
+  Attribue à _RET_VALUE la valeur générée par la sous commande

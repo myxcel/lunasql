@@ -1,0 +1,31 @@
+  VERIFY : Vérifie la signature numérique créée par la commande SIGN
+  VERIFY <msg> <sig>  Vérifie le message <msg> avec le dictionnaire de
+          signature <sig>.
+  VERIFY -f <f> [-d]  Vérifie le fichier <f>. Avec l'option -d
+          le fichier peut être de tout type et la signature est lue
+          depuis le fichier <f>.sig, sinon, le fichier texte contenant
+          la signature est vérifié.
+
+  La politique de sécurité contenue en option :SIGN_POLICY définit la
+  confiance accordée dans la clef de signature. Si la vérification
+  réussit, si :SIGN_POLICY vaut :
+    0: la confiance n'est pas vérifiée,
+    1: si la clef n'est pas de confiance, une alerte est imprimée,
+    2: si la clef n'est pas de confiance, une erreur est levée.
+  Si la vérification échoue, une erreur est levée dans tous les cas.
+
+  Pour ajouter ou supprimer une clef publique à la liste des cles de
+  confiance, il suffit d'éditer manuellement l'option :SIGN_TRUST
+  (le séparateur est la virgule ',').
+
+  Exemples :
+    opt :SIGN_TRUST $(:SIGN_TRUST),Abc01...xyZ=  -- ajout de clef
+    def s $[sign "message important"]
+    VERIFY "message important" $s  --> 1601052179215 (OK)
+    VERIFY -f script.sql     -- signature incluse en script.sql
+    VERIFY -f script.sql -d  -- lecture de script.sql.sig
+    time format $[VERIFY -f script.sql -d] --> 26/09/2020 15:53:32
+    -- ou erreur si la signature est erronée ou invalide
+
+  Attribue la date de signature (en ms epoch) à la constante
+  _RET_VALUE si la vérification réussit, sinon lève une erreur.

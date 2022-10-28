@@ -1,0 +1,29 @@
+  HELP (?) : Aide de l'application, ou d'une (ou plus.) commande(s)
+  HELP            : informations générales de l'application
+  HELP LAUNCHING  : options de lancement en ligne de commande
+  HELP PRACTICE   : informations sur l'utilisation et la syntaxe
+  HELP SUBSTITUTES : documentation des fonctions de substitution
+  HELP COMMANDS   : liste des commandes et leur courte description
+  HELP <cmd>      : aide détaillée d'utilisation de la commande cmd
+                    <cmd> -? : détaille les options possibles
+  HELP CATCHING   : guide de gestion des erreurs à l'exécution
+  HELP JS-FUNCT   : liste des commandes du SE javascript
+  HELP PACKAGES   : liste et aide des modules complémentaires
+  HELP LIBRARIES  : liste et liens à propos des bibliothèques java
+  HELP BONUS      : bonus croustillants et exemples intrigants
+  HELP LICENSES   : texte de licence de LunaSQL et des bibliothèques
+  HELP CHANGELOG  : liste des modifications des versions
+  Note : ces commandes peuvent être abrégées, ex. : help sub
+
+  HELP -a <v> <h> : ajoute à l'aide des commandes l'aide h de la var. ou
+                macro v. La variable/macro v ne doit pas être locale.
+                Avec en plus -t, pas de formatage en paragraphe.
+  HELP -d <v>   : supprime l'aide pour la variable/macro v
+  HELP -f <f>   : exporte en fichier f le contenu de toutes les aides
+
+  Note : bien qu'avec la définition de :ALLOW_REDEF à 1 les commandes
+    internes (et plugins) puissent être "cachées" par la définition
+    d'une variable de même nom, leur aide n'est pas remplaçable par
+    celle d'une variable.
+
+  Ne modifie pas la constante _RET_VALUE.

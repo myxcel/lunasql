@@ -1,0 +1,9 @@
+  DISP (\) : Affiche le contenu de la (ou les) table(s) en paramètre
+  DISP nom_table1 | nom_vue1 | pattern1 ...
+  DISP pattern  Affiche le contenu des tables dont le nom correspond
+       à l'expression régulière pattern
+       L'expr. régulière pattern peut être encadrée par ` et `.
+       Exemple : DISP tb.* -- tables commençant par 'tb'
+
+  Attribue la 1re valeur de la 1re ligne de la 1re table à _RET_VALUE
+  et le nombre de lignes total à la constante _RET_NLINES.

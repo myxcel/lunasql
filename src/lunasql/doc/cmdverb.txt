@@ -1,0 +1,10 @@
+  VERB (,) : Attribue au systême une valeur de verbose ou l'affiche
+  VERB          Affiche le niveau actuel de verbose
+  VERB n|lib    Attribue au systême la valeur de verbose n ou
+                le libellé lib n entre 0 et 4, ou +1,-2...
+                lib parmi : SILENCE, DISPLAY, MESSAGE, CHATTY, DEBUG
+                Exemple : VERB CHATTY
+
+  Note : le paquet 'const' définit des constantes pour cette commande.
+
+  Attribue le numéro de verbose fixé/affiché à la constante _RET_VALUE.

@@ -1,0 +1,57 @@
+L'ÉtiKette : Guide rapide des bonnes pratiques et des conventions
+
+Généralités :
+- indentation : 2 espaces
+- commandes internes : en minuscules
+- commandes SQL : en majuscules
+- noms de variables, de macros et de scripts sensés (pas x, tmp...)
+- noms de macros et de scripts en minuscules, mots séparés par '-'
+- noms de variables en minuscules, mots séparés par '_' ou non séparés
+- noms de variables du SE selon règles du SE
+- noms de constantes en majuscules, mots séparés par '_'
+- :END_CMD_NL à 1, :EXIT_ON_ERR à 1, :ALLOW_RECUR à 0, :ALIAS_ARG à 0
+  (sauf besoins particuliers et exceptionnels)
+
+Écriture de scripts et définition de macros :
+- utiliser les commentaires Javadoc pour la présentation
+- utiliser les noms de commandes longs (pas les raccourcis)
+- favoriser l'usage de variables locales (portée la plus interne)
+- remplacer les valeurs littérales par des constantes
+- les alias/macros font généralement moins de 30 lignes
+- les lignes font généralement moins de 80 caractères
+- toujours retourner une valeur (au moins de succès)
+Uniquement pour les macros :
+- toujours documenter (par commentaires Javadoc et doc de macro)
+- préférer l'usage de defmacro à def/arg/help
+- fractionner le code au maximum en plusieurs macros
+- déclarer les paramètres par un point initial, ex: .param
+
+Exemple complet :
+  /**
+   * exemple-macro : modèle de code LunaSQL
+   * une brève mais précise description ne gâche rien
+   * @auteur   M.P.
+   * @creation 13/01/2019
+   * @version  1.0
+   */
+  defmacro exemple-macro {.name [.age:int]} {
+    -- validation des paramètres
+    def -l mon_nom      "Nom nom est $(.name)"
+    def -l la_reponse   $[let 42 - $(.age)]
+
+    -- traitements
+    if [$(.age) > $agelimit] {
+      INSERT INTO MaTable (Nom, Age) VALUES ('$mon_nom', $la_reponse)
+      SELECT * FROM MaTable
+    }
+  } "
+    Documentation de exemple-macro
+    Cette macro est un exemple de L'ÉtiKette en LunaSQL
+    "
+
+  def agelimit 25
+  def personne {
+    nom: Alice
+    age: 26
+  }
+  exemple-macro $(personne,nom) $(personne,age)
