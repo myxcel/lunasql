@@ -1,0 +1,100 @@
+<!--
+  Description :
+  LunaSQL Ant build file https://ant.apache.org
+
+  Création : 31/10/2022
+  Édition  : 31/10/2022
+  Version  : 1.0
+-->
+
+<project name="lunasql" default="build" basedir=".">
+  <description>
+    Another dead naive but positive and fun Java JDBC SQL shell client 
+  </description>
+
+   <property name="src" location="src"/>
+   <property name="build" location="build"/>
+   <property name="dist" location="release"/>
+   <property name="docs" location="docs"/>
+   <property name="version" value="4.9.3"/>
+   <property name="main" value="lunasql.Main"/>
+   
+   <path id="classpath">
+     <fileset dir="../../lib">
+        <include name="h2-1.4.200.jar" />
+        <include name="jansi-1.11.jar" />
+        <include name="javamail-1.5.jar" />
+        <include name="jsyntaxpane-0.9.5.jar" />
+        <include name="jsqlparser.jar" />
+     </fileset>
+   </path>
+
+  <target name="init">
+    <tstamp/>
+  </target>
+
+  <target name="build" depends="init" description="compile the source">
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}"
+      optimize="on" debug="on" deprecation="on" includeantruntime="false">
+      <classpath refid="classpath"/>
+    </javac>
+    <copy todir="${build}/lunasql/doc">
+      <fileset dir="${src}/lunasql/doc">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <copy todir="${build}/lunasql/http">
+      <fileset dir="${src}/lunasql/http">
+        <include name="**/*.txt"/>
+      </fileset>
+    </copy>
+    <copy todir="${build}/lunasql/http/res">
+      <fileset dir="${src}/lunasql/http/res">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <copy todir="${build}/lunasql/misc">
+      <fileset dir="${src}/lunasql/misc">
+        <include name="**/*.sql"/>
+        <include name="**/*.js"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dist" depends="build" description="generate the distribution">
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/lunasql-${version}.jar" basedir="${build}">
+	     <manifest>
+          <attribute name="Manifest-Version" value="1.0"/>
+          <attribute name="Ant-Version" value="Apache Ant 1.8.3"/>
+          <attribute name="Main-Class" value="${main}"/>
+          <attribute name="Class-Path" value="${main}"/>
+        </manifest>
+      </jar>
+  </target>
+
+  <target name="run" depends="dist">
+    <java jar="${dist}/lib/lunasql-${version}.jar" fork="true"/>
+  </target>
+  
+  <target name="javadoc" depends="build" description="Generate documentation">
+    <mkdir dir="${docs}"/>
+    <javadoc destdir="${docs}/javadoc"
+             link="http://download.oracle.com/javase/8/docs/api/"
+             sourcepath="${src}"
+             doctitle="LunaSQL ${version}"
+             windowtitle="LunaSQL ${version}">
+      <classpath refid="classpath"/>
+    </javadoc>
+  </target>
+
+  <target name="clean" description="clean up">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${docs}"/>
+  </target>
+
+</project>
+
