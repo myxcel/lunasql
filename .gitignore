@@ -1,6 +1,5 @@
 # IDE
 .idea/
-.settings/
 
 # Keys and credentials
 .songe.key*
