@@ -5,11 +5,13 @@
 .songe.key*
 .songe.trust*
 config.cfg
+version.txt
 
 # Build files
 release/
 build/
 out/
+lunasql.iml
 
 # Database
 base/

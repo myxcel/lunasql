@@ -29,7 +29,7 @@ import lunasql.lib.Lecteur;
 import lunasql.lib.Tools;
 import lunasql.sql.SQLCnx;
 import lunasql.val.Valeur;
-//TODO : passer donc en Jline 3 https://github.com/jline/jline3
+//TODO : passer donc en Jline 3 https://github.com/jline/jline3, oublié, trop bizarre.
 
 public class Console {
 

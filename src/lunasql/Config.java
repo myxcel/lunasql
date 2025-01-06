@@ -16,11 +16,11 @@ public class Config {
 
    /* À propos */
    public static final String APP_VERSION_NAME  = "Quincella";
-   public static final String APP_VERSION_NUM   = "4.9.3.0"; // modèle: n.n.n.n
-   public static final String APP_DT_REVISION   = "28 octobre 2022";
+   public static final String APP_VERSION_NUM   = "4.9.4.0"; // modèle: n.n.n.n
+   public static final String APP_DT_REVISION   = "6 janvier 2025";
    public static final String APP_AUTHOR_NAME   = "Micaël Paganotto";
-   public static final String APP_AUTHOR_EMAIL  = "keybase.io/espritlibredev";
-   public static final String APP_AUTHOR_PGP    = "aa77 7903 6281 d0e9 209b e8b9 2627 39eb a36c eb3e";
+   public static final String APP_AUTHOR_EMAIL  = "libre@micael.unbox.org";
+   public static final String APP_AUTHOR_PGP    = "0776 05A3 706E 76FE B6A8 E237 466F B094 B95C 3589";
 
    /* Comportement général */
    public static final int     CF_MAX_CALL_DEEP = 200;    // profondeur maximale pour ALIAS et EXEC
@@ -30,7 +30,7 @@ public class Config {
    public static final boolean CT_EXIT_ON_ERROR = true;   // sortie sur erreur
    public static final int     CT_CONST_EDIT = 2;         // constantes ':' éditables en console
    public static final int     CT_SQL_UPDATE = 1;         // exécution de code SQL de mise-à-jour
-   public static final String  CT_EVAL_ENGINE = "js";     // moteur d'évaluation par défaut
+   public static final String  CT_EVAL_ENGINE = "javascript"; // moteur d'évaluation par défaut
 
    /* Contexte d'exécution : répertoires de scripts par défaut (séparateur : ou ; selon plateforme) */
    public static final String  CT_SCRIPTS_PATH = "scripts" + File.pathSeparator + ".";

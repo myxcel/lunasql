@@ -16,11 +16,13 @@
    <property name="build" location="build"/>
    <property name="dist" location="release"/>
    <property name="docs" location="docs"/>
-   <property name="version" value="4.9.3"/>
+   <property name="version" value="4.9.4"/>
    <property name="main" value="lunasql.Main"/>
    
    <path id="classpath">
      <fileset dir="../../lib">
+        <include name="rhino-1.7.15.jar" />
+        <include name="rhino-engine-1.7.15.jar" />
         <include name="h2-1.4.200.jar" />
         <include name="jansi-1.11.jar" />
         <include name="javamail-1.5.jar" />
