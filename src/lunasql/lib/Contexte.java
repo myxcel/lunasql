@@ -272,7 +272,6 @@ public final class Contexte {
    private final HashMap<String, String>       tmpvars;     // var. $_n, $_l, $1, $2...
    private final HashMap<String, Class<Instruction>> plugins;     // liste des plugins chargés
    private final HashMap<Integer, EvalEngine>  engines;     // liste des engines chargés
-   //private final ScriptEngineManager         engineman;   // old manager des engines
    private ScriptContext                       enginejscnt; // contexte pour js
    private ScriptEngine                        evaleng;     // engine courant
    private Lecteur                             lecteur;     // lecteur courant
@@ -465,7 +464,7 @@ public final class Contexte {
 
       // Lecture du fichier ressources de fonctions Javascript
       try {
-         ScriptEngine se = getEvalEngine("js");
+         ScriptEngine se = getEvalEngine("javascript");
          if (se != null) se.eval(new InputStreamReader(getClass().getResourceAsStream("/lunasql/misc/init-se.js")));
       }
       catch (ScriptException ex) {
@@ -1436,6 +1435,9 @@ public final class Contexte {
    public Object evaluerExpr(String expr) throws ScriptException {
       if (expr == null || expr.isEmpty()) return null;
       if (evaleng != null) return evaleng.eval(Tools.removeBracketsIfAny(expr).trim());
+
+      // TODO: Si aucun SE disponible
+      //erreur("Contexte", "Aucun moteur d'évaluation disponible", lng);
       return null;
    }
 
