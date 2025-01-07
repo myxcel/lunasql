@@ -578,14 +578,14 @@ public final class Contexte {
         StringBuilder ss = new StringBuilder();
         for (String s : lcmd) ss.append(s).append(' ');
         try {
-           r = evaluerExpr(ss.toString());
+           r = evaluerExpr("objectToJson(" + ss.toString() + ",1)");
            lcmd = new ArrayList<>();
            lcmd.add(r == null ? "null" : r.toString());
            cmd = getCommand("NUM");
         }
         catch (ScriptException ex) {
-           cmd = getCommand("ERRINC");
-           ((CmdErr)cmd).setMessage(ex.getMessage());
+          cmd = getCommand("ERRINC");
+          ((CmdErr)cmd).setMessage(ex.getMessage());
         }
         catch (Exception ex) {
            cmd = getCommand("ERRSYN");

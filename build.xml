@@ -3,11 +3,15 @@
   LunaSQL Ant build file https://ant.apache.org
 
   Création : 31/10/2022
-  Édition  : 31/10/2022
+  Édition  : 07/01/2025
   Version  : 1.0
 -->
 
+
 <project name="lunasql" default="build" basedir=".">
+
+  <property name="javac8" location="/usr/lib/jvm/java-8-openjdk-amd64/bin/javac" />
+
   <description>
     Another dead naive but positive and fun Java JDBC SQL shell client 
   </description>
@@ -23,11 +27,13 @@
      <fileset dir="../../lib">
         <include name="rhino-1.7.15.jar" />
         <include name="rhino-engine-1.7.15.jar" />
+        <include name="jline-0.9.94.jar" />
         <include name="h2-1.4.200.jar" />
         <include name="jansi-1.11.jar" />
         <include name="javamail-1.5.jar" />
         <include name="jsyntaxpane-0.9.5.jar" />
         <include name="jsqlparser.jar" />
+        <include name="csvjdbc-1.0-26.jar" />
      </fileset>
    </path>
 
@@ -37,7 +43,7 @@
 
   <target name="build" depends="init" description="compile the source">
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}"
+    <javac executable="${javac8}" fork="yes" srcdir="${src}" destdir="${build}"
       optimize="on" debug="on" deprecation="on" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
@@ -67,14 +73,14 @@
   <target name="dist" depends="build" description="generate the distribution">
     <mkdir dir="${dist}"/>
     <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/lunasql-${version}.jar" basedir="${build}">
-	     <manifest>
-          <attribute name="Manifest-Version" value="1.0"/>
-          <attribute name="Ant-Version" value="Apache Ant 1.8.3"/>
-          <attribute name="Main-Class" value="${main}"/>
-          <attribute name="Class-Path" value="${main}"/>
-        </manifest>
-      </jar>
+    <jar jarfile="${dist}/lib/lunasql-${version}.jar" basedir="${build}" level="6">
+      <manifest>
+        <attribute name="Manifest-Version" value="1.0"/>
+        <attribute name="Ant-Version" value="Apache Ant 1.8.3"/>
+        <attribute name="Main-Class" value="${main}"/>
+        <attribute name="Class-Path" value="${main}"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="run" depends="dist">
