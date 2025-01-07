@@ -18,7 +18,7 @@ public class CmdLet extends Instruction {
    @Override
    public int execute() {
       try {
-         Object r = cont.evaluerExpr(getSCommand(1));
+         Object r = cont.evaluerExpr("objectToJson(" + getSCommand(1) + ",1)");
          Valeur vr = r == null ? null :
             new ValeurDef(cont, r.toString(), Contexte.VERB_BVR, Contexte.BR_BLUE, r.toString());
          cont.setValeur(vr);

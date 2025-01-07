@@ -6,6 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -82,7 +83,10 @@ public class CmdView extends Instruction {
             frame.setVisible(true);
          }
          catch (HeadlessException ex) {
-            return cont.exception("EDIT", "ERREUR HeadlessException : " + ex.getMessage(), lng, ex);
+            return cont.exception("VIEW", "ERREUR HeadlessException : " + ex.getMessage(), lng, ex);
+         }
+         catch (MissingResourceException ex) {
+            return cont.exception("VIEW", "ERREUR MissingResourceException : " + ex.getMessage(), lng, ex);
          }
 
          cont.setValeur(new ValeurDef(cont, "-> " + nbLig + " ligne" + (nbLig > 1 ? "s" : "") +
